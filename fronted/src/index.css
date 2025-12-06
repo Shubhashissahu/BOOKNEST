@@ -1,0 +1,14 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+.text-brown {
+  color: #6b3e26 !important;
+}
+
+.text-orange {
+  color: #cc6600 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
