@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 
 function HeroSection() {
     return (
-    <section className="py-5 bg-light">
+    <section className="py-6 bg-light">
       <div className="container text-center text-md-start">
         <div className="row align-items-center">
           <div className="col-md-6 mb-4">
