@@ -17,7 +17,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import BookIcon from "@mui/icons-material/MenuBook";
 
 import { styled, alpha } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
+// Styled Search Component
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 30,
@@ -49,12 +51,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function NavbarComponent({ cartCount, onCartClick, onLoginClick }) {
+export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
   const [menuAnchor, setMenuAnchor] = React.useState(null);
 
   const openMenu = (event) => setMenuAnchor(event.currentTarget);
   const closeMenu = () => setMenuAnchor(null);
 
+  // Navigation Links Data
+  const navLinks = [
+    { label: "Home", path: "/" },
+    { label: "Categories", path: "/categories" },
+    { label: "Books", path: "/books" },
+    { label: "Best Sellers", path: "/best-sellers" },
+    { label: "New Arrivals", path: "/new-arrivals" },
+    { label: "Contact", path: "/contact" },
+  ];
   return (
     <AppBar
       position="sticky"
@@ -64,45 +75,46 @@ export default function NavbarComponent({ cartCount, onCartClick, onLoginClick }
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
+        
         {/* LEFT — LOGO */}
         <Box display="flex" alignItems="center" gap={1}>
           <BookIcon sx={{ color: "orange", fontSize: 32 }} />
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "bold",
-              background: "linear-gradient(90deg,#ffa500,#ff5e00)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            BOOKNEST
-          </Typography>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                background: "linear-gradient(90deg,#ffa500,#ff5e00)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                cursor: "pointer",
+              }}
+            >
+              BOOKNEST
+            </Typography>
+          </Link>
         </Box>
 
-        {/* CENTER — NAVIGATION (Desktop Only) */}
+        {/* CENTER — NAVIGATION (DESKTOP) */}
         <Box
           sx={{
             display: { xs: "none", md: "flex" },
             gap: 4,
             fontWeight: 500,
+            alignItems: "center",
           }}
         >
-          {["Home", "Categories", "Best Sellers", "New Arrivals", "Contact"].map(
-            (item) => (
-              <Typography
-                key={item}
-                sx={{
-                  cursor: "pointer",
-                  color: "white",
-                  "&:hover": { color: "orange" },
-                }}
-              >
-                {item}
+          {navLinks.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              <Typography sx={{ "&:hover": { color: "orange" } }}>
+                {item.label}
               </Typography>
-            )
-          )}
+            </Link>
+          ))}
         </Box>
 
         {/* SEARCH BAR */}
@@ -145,14 +157,18 @@ export default function NavbarComponent({ cartCount, onCartClick, onLoginClick }
           open={Boolean(menuAnchor)}
           onClose={closeMenu}
         >
-          {["Home", "Categories", "Best Sellers", "New Arrivals", "Contact"].map(
-            (item) => (
-              <MenuItem key={item} onClick={closeMenu}>
-                {item}
-              </MenuItem>
-            )
-          )}
+          {navLinks.map((item) => (
+            <MenuItem key={item.path} onClick={closeMenu}>
+              <Link
+                to={item.path}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                {item.label}
+              </Link>
+            </MenuItem>
+          ))}
         </Menu>
+
       </Toolbar>
     </AppBar>
   );

@@ -1,51 +1,138 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-function LoginModal({ show, onClose }) {
-    const [isLogin, setIsLogin] = useState(true);
+export default function LoginModal({ show, onClose }) {
+  const [isLogin, setIsLogin] = useState(true);
 
-    return (
-        <Modal show={show} onHide={onClose} centered>
-            <Modal.Header style={{ background: '#1e3a8a', color: 'white' }}>
-                <Modal.Title>{isLogin ? 'Login' : 'Register'}</Modal.Title>
-                <button 
-                    type="button" 
-                    className="btn-close btn-close-white"
-                    onClick={onClose}
-                ></button>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    {!isLogin && (
-                        <Form.Group className="mb-3">
-                            <Form.Label>Full Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter your name" />
-                        </Form.Group>
-                    )}
-                    <Form.Group className="mb-3">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="Enter your email" />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Enter your password" />
-                    </Form.Group>
-                    <Button 
-                        variant={isLogin ? "primary" : "success"} 
-                        className="w-100 mb-3"
-                    >
-                        {isLogin ? 'Login' : 'Register'}
-                    </Button>
-                </Form>
-                <p className="text-center">
-                    {isLogin ? "Don't have an account? " : "Already have an account? "}
-                    <a href="#" onClick={() => setIsLogin(!isLogin)} style={{ cursor: 'pointer' }}>
-                        {isLogin ? 'Register here' : 'Login here'}
-                    </a>
-                </p>
-            </Modal.Body>
-        </Modal>
-    );
+  return (
+    <Dialog
+      open={show}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        sx: {
+          background: "rgba(255,255,255,0.08)",
+          backdropFilter: "blur(15px)",
+          borderRadius: "20px",
+          border: "1px solid rgba(255,255,255,0.15)",
+          p: 1,
+        },
+      }}
+    >
+      {/* HEADER */}
+      <DialogTitle
+        sx={{
+          color: "white",
+          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 2,
+          py: 1,
+          background: "linear-gradient(90deg,#ffa500,#ff5e00)",
+          borderRadius: "15px 15px 0 0",
+        }}
+      >
+        {isLogin ? "Login" : "Register"}
+
+        <IconButton onClick={onClose} sx={{ color: "white" }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      {/* BODY */}
+      <DialogContent sx={{ mt: 2 }}>
+        <Box component="form">
+          {/* Full Name (Register Only) */}
+          {!isLogin && (
+            <TextField
+              fullWidth
+              label="Full Name"
+              variant="outlined"
+              margin="normal"
+              InputLabelProps={{ style: { color: "white" } }}
+              InputProps={{
+                style: { color: "white" },
+              }}
+            />
+          )}
+
+          {/* Email */}
+          <TextField
+            fullWidth
+            type="email"
+            label="Email"
+            variant="outlined"
+            margin="normal"
+            InputLabelProps={{ style: { color: "white" } }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+          />
+
+          {/* Password */}
+          <TextField
+            fullWidth
+            type="password"
+            label="Password"
+            variant="outlined"
+            margin="normal"
+            InputLabelProps={{ style: { color: "white" } }}
+            InputProps={{
+              style: { color: "white" },
+            }}
+          />
+
+          {/* Submit Button */}
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{
+              mt: 3,
+              py: 1.3,
+              borderRadius: "30px",
+              background: "linear-gradient(90deg,#ffa500,#ff5e00)",
+              fontWeight: "bold",
+              "&:hover": {
+                opacity: 0.9,
+                transform: "translateY(-2px)",
+                transition: "0.2s",
+              },
+            }}
+          >
+            {isLogin ? "Login" : "Register"}
+          </Button>
+        </Box>
+
+        {/* SWITCH LOGIN / REGISTER */}
+        <Typography
+          align="center"
+          sx={{ mt: 2, color: "rgba(255,255,255,0.7)" }}
+        >
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <span
+            onClick={() => setIsLogin(!isLogin)}
+            style={{
+              color: "#ffa500",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            {isLogin ? "Register here" : "Login here"}
+          </span>
+        </Typography>
+      </DialogContent>
+    </Dialog>
+  );
 }
-
-export default LoginModal;

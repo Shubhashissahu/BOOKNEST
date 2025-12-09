@@ -1,94 +1,175 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
+import React, { useState } from "react";
+import {
+  Box,
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent
+} from "@mui/material";
 
 function ContactPage() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form Data:', formData);
-        alert('Thank you for your message! We will get back to you soon.');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Thank you for contacting us! We will respond shortly.");
+    setFormData({ name: "", email: "", subject: "", message: "" });
+  };
 
-    return (
-        <Container className="my-5">
-            <Row className="justify-content-center">
-                <Col md={8}>
-                    <h1 className="text-center mb-4">Contact Us</h1>
-                    <Card className="p-4 shadow">
-                        <Form onSubmit={handleSubmit}>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Full Name</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    placeholder="Enter your full name"
-                                    required
-                                />
-                            </Form.Group>
+  return (
+    <Box sx={{ py: 10, color: "white" }}>
+      
+      {/* PAGE TITLE */}
+      <Typography
+        variant="h4"
+        align="center"
+        sx={{
+          fontWeight: "bold",
+          mb: 2,
+          background: "linear-gradient(90deg,#ffa500,#ff5e00)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        Contact Us
+      </Typography>
 
-                            <Form.Group className="mb-3">
-                                <Form.Label>Email Address</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="Enter your email"
-                                    required
-                                />
-                            </Form.Group>
+      <Typography
+        align="center"
+        sx={{
+          maxWidth: 650,
+          mx: "auto",
+          mb: 5,
+          color: "rgba(255,255,255,0.65)",
+          fontSize: "1.1rem",
+        }}
+      >
+        We'd love to hear from you! Send us your questions, feedback, or support
+        requests and our team will reach out shortly.
+      </Typography>
 
-                            <Form.Group className="mb-3">
-                                <Form.Label>Subject</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="subject"
-                                    value={formData.subject}
-                                    onChange={handleChange}
-                                    placeholder="Enter subject"
-                                    required
-                                />
-                            </Form.Group>
+      {/* CONTACT FORM CARD */}
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={8} lg={6}>
+          <Card
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: "rgba(255,255,255,0.06)",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0px 8px 30px rgba(0,0,0,0.4)",
+            }}
+          >
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                
+                <TextField
+                  fullWidth
+                  label="Full Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  InputLabelProps={{ style: { color: "white" } }}
+                  InputProps={{
+                    style: { color: "white" },
+                  }}
+                />
 
-                            <Form.Group className="mb-4">
-                                <Form.Label>Message</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={5}
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    placeholder="Enter your message"
-                                    required
-                                />
-                            </Form.Group>
+                <TextField
+                  fullWidth
+                  type="email"
+                  label="Email Address"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  InputLabelProps={{ style: { color: "white" } }}
+                  InputProps={{
+                    style: { color: "white" },
+                  }}
+                />
 
-                            <Button variant="primary" type="submit" className="w-100">
-                                Send Message
-                            </Button>
-                        </Form>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
-    );
+                <TextField
+                  fullWidth
+                  label="Subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  InputLabelProps={{ style: { color: "white" } }}
+                  InputProps={{
+                    style: { color: "white" },
+                  }}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Message"
+                  multiline
+                  rows={5}
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                  InputLabelProps={{ style: { color: "white" } }}
+                  InputProps={{
+                    style: { color: "white" },
+                  }}
+                />
+
+                {/* SUBMIT BUTTON */}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    py: 1.4,
+                    borderRadius: "30px",
+                    background: "linear-gradient(90deg,#ffa500,#ff5e00)",
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    "&:hover": {
+                      opacity: 0.9,
+                      transform: "translateY(-3px)",
+                      transition: "0.2s",
+                    },
+                  }}
+                >
+                  Send Message
+                </Button>
+
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* EXTRA SPACING */}
+      <Box sx={{ height: 50 }}></Box>
+    </Box>
+  );
 }
 
 export default ContactPage;

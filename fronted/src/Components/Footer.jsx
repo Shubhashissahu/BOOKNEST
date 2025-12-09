@@ -1,48 +1,186 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React from "react";
+import { Box, Grid, Typography, TextField, Button, IconButton } from "@mui/material";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  LinkedIn,
+} from "@mui/icons-material";
 
-function Footer() {
-    return (
-        <footer style={{ background: '#1e3a8a', color: 'white', padding: '40px 0', marginTop: '60px' }}>
-            <Container>
-                <Row>
-                    <Col md={3} className="mb-4">
-                        <h6 className="fw-bold mb-3">About Us</h6>
-                        <p>BookStore is your ultimate destination for reading books online with thousands of titles available.</p>
-                    </Col>
-                    <Col md={3} className="mb-4">
-                        <h6 className="fw-bold mb-3">Quick Links</h6>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Home</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Books</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Pricing</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>FAQ</a></li>
-                        </ul>
-                    </Col>
-                    <Col md={3} className="mb-4">
-                        <h6 className="fw-bold mb-3">Support</h6>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Contact Us</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Help Center</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}>Privacy Policy</a></li>
-                        </ul>
-                    </Col>
-                    <Col md={3} className="mb-4">
-                        <h6 className="fw-bold mb-3">Follow Us</h6>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}><i className="fab fa-facebook me-2"></i>Facebook</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}><i className="fab fa-twitter me-2"></i>Twitter</a></li>
-                            <li><a href="#" style={{ color: '#d1d5db', textDecoration: 'none' }}><i className="fab fa-instagram me-2"></i>Instagram</a></li>
-                        </ul>
-                    </Col>
-                </Row>
-                <hr style={{ borderColor: 'rgba(255,255,255,0.2)' }} />
-                <div className="text-center">
-                    <p>&copy; 2025 BookStore. All Rights Reserved.</p>
-                </div>
-            </Container>
-        </footer>
-    );
+export default function Footer() {
+  return (
+    <Box
+      sx={{
+        background: "#0f0f0f",
+        color: "#ccc",
+        pt: 8,
+        pb: 4,
+        px: { xs: 3, md: 10 },
+        mt: 8,
+      }}
+    >
+      {/* MAIN FOOTER GRID */}
+      <Grid container spacing={6}>
+        
+        {/* BRAND SECTION */}
+        <Grid item xs={12} md={3}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                background: "#ffa500",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 24,
+                fontWeight: "bold",
+                color: "#000",
+              }}
+            >
+              📘
+            </Box>
+
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                color: "#ffa500",
+              }}
+            >
+              BookNest
+            </Typography>
+          </Box>
+
+          <Typography sx={{ mt: 2, color: "gray", lineHeight: 1.6 }}>
+            BookNest is your trusted destination for discovering amazing reads across all
+            genres. Quality books delivered with care.
+          </Typography>
+
+          {/* SOCIAL ICONS */}
+          <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
+            <IconButton sx={iconStyle}><Facebook /></IconButton>
+            <IconButton sx={iconStyle}><Twitter /></IconButton>
+            <IconButton sx={iconStyle}><Instagram /></IconButton>
+            <IconButton sx={iconStyle}><LinkedIn /></IconButton>
+          </Box>
+        </Grid>
+
+        {/* QUICK LINKS */}
+        <Grid item xs={12} md={3}>
+          <Typography variant="h6" sx={sectionTitle}>Quick Links</Typography>
+
+          {["Best Sellers", "New Arrivals", "Coming Soon", "Gift Cards"].map((item) => (
+            <Typography key={item} sx={linkText}>{item}</Typography>
+          ))}
+        </Grid>
+
+        {/* CUSTOMER SERVICE */}
+        <Grid item xs={12} md={3}>
+          <Typography variant="h6" sx={sectionTitle}>Customer Service</Typography>
+
+          {["Contact Us", "Shipping Info", "Returns & Refunds", "FAQ", "Privacy Policy"]
+            .map((item) => (
+              <Typography key={item} sx={linkText}>{item}</Typography>
+            ))}
+        </Grid>
+
+        {/* NEWSLETTER */}
+        <Grid item xs={12} md={3}>
+          <Typography variant="h6" sx={sectionTitle}>Newsletter</Typography>
+
+          <Typography sx={{ color: "gray", mb: 2 }}>
+            Subscribe to get special offers, free giveaways, and updates on new arrivals.
+          </Typography>
+
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <TextField
+              placeholder="Your email"
+              variant="filled"
+              fullWidth
+              InputProps={{
+                disableUnderline: true,
+                sx: {
+                  background: "#151515",
+                  borderRadius: "10px",
+                  color: "white",
+                },
+              }}
+            />
+
+            <Button
+              variant="contained"
+              sx={{
+                background: "#ffa500",
+                color: "#000",
+                px: 3,
+                borderRadius: "10px",
+                fontWeight: "bold",
+                "&:hover": { background: "#ff8800" },
+              }}
+            >
+              Subscribe
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+
+      {/* DIVIDER */}
+      <Box
+        sx={{
+          height: 1,
+          background: "#222",
+          my: 4,
+        }}
+      ></Box>
+
+      {/* COPYRIGHT + POLICIES */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: "space-between",
+          alignItems: "center",
+          color: "#777",
+          fontSize: "0.9rem",
+        }}
+      >
+        <Typography>© 2025 BookNest. All rights reserved.</Typography>
+
+        <Box sx={{ display: "flex", gap: 3, mt: { xs: 2, md: 0 } }}>
+          <Typography sx={policyStyle}>Terms of Service</Typography>
+          <Typography sx={policyStyle}>Privacy Policy</Typography>
+          <Typography sx={policyStyle}>Cookie Policy</Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
 }
 
-export default Footer;
+/* --- STYLES --- */
+const iconStyle = {
+  background: "#1c1c1c",
+  borderRadius: "50%",
+  padding: 1,
+  color: "#fff",
+  "&:hover": { background: "#ffa500", color: "#000" },
+};
+
+const sectionTitle = {
+  fontWeight: "bold",
+  color: "#ffa500",
+  mb: 2,
+};
+
+const linkText = {
+  color: "gray",
+  mb: 1,
+  cursor: "pointer",
+  "&:hover": { color: "#ffa500" },
+};
+
+const policyStyle = {
+  cursor: "pointer",
+  "&:hover": { color: "#ffa500" },
+};

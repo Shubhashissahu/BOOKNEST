@@ -5,7 +5,7 @@ import { ThemeProvider, createTheme, CssBaseline, Container } from "@mui/materia
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// 🔥 Use new MUI Navbar (replace your old bootstrap navbar)
+// MUI Navbar
 import NavBarMUI from "./Components/NavBarMUI";
 
 // Components
@@ -16,8 +16,10 @@ import Footer from "./Components/Footer";
 // Pages
 import HomePage from "./Pages/Home";
 import ContactPage from "./Pages/ContactPage";
+import BooksPage from "./Pages/BooksPage";
 
-// ⭐ MUI Theme
+
+// Theme
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -42,14 +44,14 @@ function App() {
       <CssBaseline />
 
       <Router>
-        {/* 🌟 New Modern Navbar */}
+        {/* Navbar */}
         <NavBarMUI
           cartCount={cart.length}
           onCartClick={() => setShowCart(true)}
           onLoginClick={() => setShowLogin(true)}
         />
 
-        {/* 🛒 Shopping Cart Sidebar */}
+        {/* Cart Drawer */}
         <ShoppingCartSheet
           isOpen={showCart}
           onClose={() => setShowCart(false)}
@@ -66,15 +68,17 @@ function App() {
           onRemoveItem={(id) => setCart(cart.filter((item) => item.id !== id))}
         />
 
-        {/* 🔐 Login Modal */}
+        {/* Login Modal */}
         <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
 
-        {/* ✨ Main Content */}
+        {/* Pages */}
         <Container sx={{ py: 4 }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
+        <Routes>
+  <Route path="/" element={<HomePage />} />
+  <Route path="/books" element={<BooksPage />} />
+  <Route path="/contact" element={<ContactPage />} />
+</Routes>
+
         </Container>
 
         {/* Footer */}
