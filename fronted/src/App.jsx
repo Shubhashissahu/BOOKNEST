@@ -1,20 +1,36 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
+import { ThemeProvider, createTheme, CssBaseline, Container } from "@mui/material";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { ToastContainer } from "react-toastify";
-import { Container } from "react-bootstrap";
+// 🔥 Use new MUI Navbar (replace your old bootstrap navbar)
+import NavBarMUI from "./Components/NavBarMUI";
 
-import NavbarComponent from "./Components/Navbar";
+// Components
 import LoginModal from "./Components/LoginModal";
-import Footer from "./Components/Footer";
 import ShoppingCartSheet from "./Components/ShoppingCartSheet";
+import Footer from "./Components/Footer";
 
 // Pages
 import HomePage from "./Pages/Home";
-// import BooksPage from "./Pages/BooksPage";
 import ContactPage from "./Pages/ContactPage";
+
+// ⭐ MUI Theme
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: { main: "#ffa500" },
+    background: {
+      default: "#0d0d0d",
+      paper: "#111",
+    },
+  },
+  typography: {
+    fontFamily: "Inter, Roboto, Arial, sans-serif",
+  },
+});
 
 function App() {
   const [showCart, setShowCart] = useState(false);
@@ -22,15 +38,16 @@ function App() {
   const [cart, setCart] = useState([]);
 
   return (
-    <Router>
-      <div className="App d-flex flex-column min-vh-100">
-        {/* 🍔 Navbar */}
-      <NavbarComponent
-  cartCount={cart.length}
-  onCartClick={() => setShowCart(true)}
-  onLoginClick={() => setShowLogin(true)}
-/>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
 
+      <Router>
+        {/* 🌟 New Modern Navbar */}
+        <NavBarMUI
+          cartCount={cart.length}
+          onCartClick={() => setShowCart(true)}
+          onLoginClick={() => setShowLogin(true)}
+        />
 
         {/* 🛒 Shopping Cart Sidebar */}
         <ShoppingCartSheet
@@ -53,32 +70,20 @@ function App() {
         <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
 
         {/* ✨ Main Content */}
-        <Container as="main" className="flex-grow-1 mt-4">
+        <Container sx={{ py: 4 }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            {/* <Route path="/books" element={<BooksPage cart={cart} setCart={setCart} />} /> */}
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </Container>
 
-        {/* 📄 Footer */}
+        {/* Footer */}
         <Footer />
 
-        {/* Toast notifications */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-      </div>
-    </Router>
+        {/* Toast */}
+        <ToastContainer />
+      </Router>
+    </ThemeProvider>
   );
 }
 
