@@ -19,26 +19,20 @@ import BookIcon from "@mui/icons-material/MenuBook";
 import { styled, alpha } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 
-// Styled Search Component
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 30,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
+  "&:hover": { backgroundColor: alpha(theme.palette.common.white, 0.25) },
   marginRight: theme.spacing(2),
-  marginLeft: 0,
   width: "100%",
   maxWidth: 300,
-  transition: "0.3s",
 }));
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
   position: "absolute",
   height: "100%",
-  pointerEvents: "none",
   display: "flex",
   alignItems: "center",
 }));
@@ -54,29 +48,22 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
   const [menuAnchor, setMenuAnchor] = React.useState(null);
 
-  const openMenu = (event) => setMenuAnchor(event.currentTarget);
-  const closeMenu = () => setMenuAnchor(null);
-
-  // Navigation Links Data
   const navLinks = [
     { label: "Home", path: "/" },
-    { label: "Categories", path: "/categories" },
     { label: "Books", path: "/books" },
     { label: "Best Sellers", path: "/best-sellers" },
     { label: "New Arrivals", path: "/new-arrivals" },
     { label: "Contact", path: "/contact" },
   ];
+
+  const openMenu = (event) => setMenuAnchor(event.currentTarget);
+  const closeMenu = () => setMenuAnchor(null);
+
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        background: "#0b0b0b",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-      }}
-    >
+    <AppBar position="sticky" sx={{ background: "#0b0b0b" }}>
       <Toolbar sx={{ justifyContent: "space-between" }}>
         
-        {/* LEFT — LOGO */}
+        {/* LOGO */}
         <Box display="flex" alignItems="center" gap={1}>
           <BookIcon sx={{ color: "orange", fontSize: 32 }} />
           <Link to="/" style={{ textDecoration: "none" }}>
@@ -95,12 +82,11 @@ export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
           </Link>
         </Box>
 
-        {/* CENTER — NAVIGATION (DESKTOP) */}
+        {/* DESKTOP NAVIGATION */}
         <Box
           sx={{
             display: { xs: "none", md: "flex" },
             gap: 4,
-            fontWeight: 500,
             alignItems: "center",
           }}
         >
@@ -108,13 +94,27 @@ export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
             <Link
               key={item.path}
               to={item.path}
-              style={{ color: "white", textDecoration: "none" }}
+              style={{ textDecoration: "none", color: "white" }}
             >
               <Typography sx={{ "&:hover": { color: "orange" } }}>
                 {item.label}
               </Typography>
             </Link>
           ))}
+
+          {/* ⭐ SPECIAL CATEGORIES SCROLL BUTTON ⭐ */}
+          <Typography
+            sx={{ cursor: "pointer", "&:hover": { color: "orange" } }}
+            onClick={() => {
+              if (window.location.pathname !== "/") {
+                window.location.href = "/?scroll=categories";
+              } else {
+                window.goToCategories?.();
+              }
+            }}
+          >
+            Categories
+          </Typography>
         </Box>
 
         {/* SEARCH BAR */}
@@ -125,16 +125,10 @@ export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
           <StyledInputBase placeholder="Search books…" />
         </Search>
 
-        {/* RIGHT — ICONS */}
+        {/* RIGHT ICONS */}
         <Box display="flex" alignItems="center" gap={2}>
-          <IconButton color="inherit">
-            <DarkModeIcon />
-          </IconButton>
-
-          <IconButton color="inherit" onClick={onLoginClick}>
-            <AccountCircle />
-          </IconButton>
-
+          <IconButton color="inherit"><DarkModeIcon /></IconButton>
+          <IconButton color="inherit" onClick={onLoginClick}><AccountCircle /></IconButton>
           <IconButton color="inherit" onClick={onCartClick}>
             <Badge badgeContent={cartCount} color="warning">
               <ShoppingCartIcon />
@@ -152,21 +146,28 @@ export default function NavBarMUI({ cartCount, onCartClick, onLoginClick }) {
         </Box>
 
         {/* MOBILE MENU */}
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={closeMenu}
-        >
+        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={closeMenu}>
           {navLinks.map((item) => (
             <MenuItem key={item.path} onClick={closeMenu}>
-              <Link
-                to={item.path}
-                style={{ textDecoration: "none", color: "white" }}
-              >
+              <Link to={item.path} style={{ textDecoration: "none", color: "white" }}>
                 {item.label}
               </Link>
             </MenuItem>
           ))}
+
+          {/* ⭐ Mobile version of categories scroll */}
+          <MenuItem
+            onClick={() => {
+              closeMenu();
+              if (window.location.pathname !== "/") {
+                window.location.href = "/?scroll=categories";
+              } else {
+                window.goToCategories?.();
+              }
+            }}
+          >
+            Categories
+          </MenuItem>
         </Menu>
 
       </Toolbar>
