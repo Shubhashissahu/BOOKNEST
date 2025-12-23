@@ -87,44 +87,16 @@ export default function Footer() {
         </Grid>
 
         {/* NEWSLETTER */}
-        <Grid item xs={12} md={3}>
-          <Typography variant="h6" sx={sectionTitle}>Newsletter</Typography>
+      
 
-          <Typography sx={{ color: "gray", mb: 2 }}>
-            Subscribe to get special offers, free giveaways, and updates on new arrivals.
-          </Typography>
+          
+          
+           
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <TextField
-              placeholder="Your email"
-              variant="filled"
-              fullWidth
-              InputProps={{
-                disableUnderline: true,
-                sx: {
-                  background: "#151515",
-                  borderRadius: "10px",
-                  color: "white",
-                },
-              }}
-            />
-
-            <Button
-              variant="contained"
-              sx={{
-                background: "#ffa500",
-                color: "#000",
-                px: 3,
-                borderRadius: "10px",
-                fontWeight: "bold",
-                "&:hover": { background: "#ff8800" },
-              }}
-            >
-              Subscribe
-            </Button>
-          </Box>
+          
+         
         </Grid>
-      </Grid>
+    
 
       {/* DIVIDER */}
       <Box
