@@ -85,19 +85,7 @@ export default function Footer() {
               <Typography key={item} sx={linkText}>{item}</Typography>
             ))}
         </Grid>
-
-        {/* NEWSLETTER */}
-      
-
-          
-          
-           
-
-          
-         
         </Grid>
-    
-
       {/* DIVIDER */}
       <Box
         sx={{

@@ -1,95 +1,159 @@
-import React from "react";
-import { Box, Grid, Typography, Button } from "@mui/material";
+import { Box, Typography, Grid, Button } from "@mui/material";
+import { motion } from "framer-motion";
 
-export default function HeroSection() {
+/* Motion variants */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.75, ease: "easeOut" },
+  },
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, x: 80 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 1.0, ease: "easeOut" },
+  },
+};
+
+export default function HeroSection({ onBrowse }) {
   return (
     <Box
       sx={{
-        py: 10,
-        px: 2,
-        borderRadius: 3,
-        mt: 3,
-        background: "linear-gradient(135deg,#111,#1a1a1a)",
+        width: "100vw",
+        minHeight: "90vh",
+        display: "flex",
+        alignItems: "center",
+        background:
+          "radial-gradient(circle at top left, #222 0%, #0d0d0d 60%)",
       }}
     >
-      <Grid
-        container
-        spacing={4}
-        alignItems="center"
-        justifyContent="center"
-        maxWidth="lg"
-        sx={{ mx: "auto" }}
+      {/* INNER CONTAINER */}
+      <Box
+        sx={{
+          maxWidth: "1200px",
+          width: "100%",
+          mx: "auto",
+          px: { xs: 2, md: 4 },
+        }}
       >
-        {/* LEFT SIDE */}
-        <Grid item xs={12} md={6}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: "bold",
-              mb: 2,
-              background: "linear-gradient(90deg,#ffa500,#ff5e00)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Discover Your Next Great Read
-          </Typography>
-
-          <Typography
-            variant="h6"
-            sx={{ color: "rgba(255,255,255,0.7)", mb: 4 }}
-          >
-            Explore thousands of books across all genres.  
-            Find stories that inspire, teach, and entertain—anytime, anywhere.
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              variant="contained"
-              sx={{
-                px: 4,
-                py: 1.2,
-                borderRadius: "30px",
-                background: "linear-gradient(90deg,#ffa500,#ff5e00)",
-                fontWeight: "bold",
-                "&:hover": { opacity: 0.9 },
-              }}
+        <Grid container spacing={6} alignItems="center">
+          {/* LEFT CONTENT */}
+          <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.4 }}
             >
-              Browse Collection
-            </Button>
+              <motion.div variants={itemVariants}>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 3,
+                    lineHeight: 1.2,
+                    background:
+                      "linear-gradient(90deg,#ffa500,#ff5e00)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  Discover Your Next
+                  <br />
+                  Great Read
+                </Typography>
+              </motion.div>
 
-            <Button
-              variant="outlined"
-              sx={{
-                px: 4,
-                py: 1.2,
-                borderRadius: "30px",
-                borderColor: "#ffa500",
-                color: "#ffa500",
-                fontWeight: "bold",
-                "&:hover": { borderColor: "#ff5e00", color: "#ff5e00" },
-              }}
+              <motion.div variants={itemVariants}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "rgba(255,255,255,0.7)",
+                    mb: 4,
+                    maxWidth: 520,
+                  }}
+                >
+                  Explore thousands of books across genres. Find stories
+                  that inspire, educate, and entertain—curated just for you.
+                </Typography>
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  <Button
+                    variant="contained"
+                    onClick={onBrowse}
+                    sx={{
+                      px: 4,
+                      py: 1.3,
+                      borderRadius: "999px",
+                      fontWeight: "bold",
+                      background:
+                        "linear-gradient(90deg,#ffa500,#ff5e00)",
+                    }}
+                  >
+                    Browse Collection
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      px: 4,
+                      py: 1.3,
+                      borderRadius: "999px",
+                      borderColor: "#ffa500",
+                      color: "#ffa500",
+                    }}
+                  >
+                    View Best Sellers
+                  </Button>
+                </Box>
+              </motion.div>
+            </motion.div>
+          </Grid>
+
+          {/* RIGHT IMAGE */}
+          <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
+            <motion.div
+              variants={imageVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.4 }}
             >
-              View Best Sellers
-            </Button>
-          </Box>
+              <Box
+                component="img"
+                src="https://images.unsplash.com/photo-1628977613138-dcfede720de7"
+                alt="Bookstore"
+                sx={{
+                  width: "100%",
+                  maxWidth: 520,
+                  display: "block",
+                  marginLeft: { xs: "auto", md: "auto" },
+                  marginRight: { xs: "auto", md: 0 },
+                  borderRadius: 4,
+                  boxShadow:
+                    "0 20px 60px rgba(0,0,0,0.6)",
+                }}
+              />
+            </motion.div>
+          </Grid>
         </Grid>
-
-        {/* RIGHT SIDE IMAGE */}
-        <Grid item xs={12} md={6} sx={{ textAlign: "center" }}>
-          <Box
-            component="img"
-            src="https://images.unsplash.com/photo-1628977613138-dcfede720de7"
-            alt="Bookstore"
-            sx={{
-              width: "100%",
-              maxWidth: 500,
-              borderRadius: "20px",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
-            }}
-          />
-        </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 }
