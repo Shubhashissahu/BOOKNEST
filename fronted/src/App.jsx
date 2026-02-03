@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import { ToastContainer } from "react-toastify";
+import { Toolbar } from "@mui/material";
+
 import "react-toastify/dist/ReactToastify.css";
 
 // MUI Navbar
@@ -73,13 +75,15 @@ function App() {
         <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
 
         {/* ✅ MAIN CONTENT (PUSHED BELOW NAVBAR) */}
-        <Box sx={{ pt: "80px", minHeight: "100vh" }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/books" element={<BooksPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </Box>
+      <Box sx={{ minHeight: "100vh" }}>
+  <Toolbar /> {/* exact AppBar height */}
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/books" element={<BooksPage />} />
+    <Route path="/contact" element={<ContactPage />} />
+  </Routes>
+</Box>
+
 
         {/* Footer */}
         <Footer />

@@ -7,78 +7,124 @@ import {
   Button,
 } from "@mui/material";
 
+/**
+ * BookCard
+ * Props:
+ * - book: { id, title, author, image, price }
+ * - onViewDetails(book)
+ * - onAddToCart(book)
+ */
+
 const BookCard = ({ book, onViewDetails, onAddToCart }) => {
+  // ⭐ Open Library has no ratings → generate safe fake rating (4–5)
+  const rating = book.rating ?? Math.floor(Math.random() * 2) + 4;
+
   return (
     <Card
       sx={{
-        height: "100%", // ⭐ equal height in grid
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#111",
+        backgroundColor: "#111",
         color: "#fff",
         borderRadius: 3,
         overflow: "hidden",
-        transition: "0.3s",
+        transition: "all 0.3s ease",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.4)",
         "&:hover": {
-          transform: "translateY(-8px)",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.6)",
+          transform: "translateY(-6px)",
+          boxShadow: "0 16px 40px rgba(0,0,0,0.6)",
         },
       }}
     >
-      {/* IMAGE */}
+      {/* ================= IMAGE ================= */}
       <Box
         component="img"
-        src={book.cover}
+        src={book.image}
         alt={book.title}
+        onError={(e) => {
+          e.target.src =
+            "https://via.placeholder.com/300x450?text=No+Cover";
+        }}
         sx={{
           width: "100%",
-          height: 240,
+          height: 200,          // ⭐ keeps cards compact
           objectFit: "cover",
+          backgroundColor: "#222",
         }}
       />
 
-      {/* CONTENT */}
+      {/* ================= CONTENT ================= */}
       <CardContent
         sx={{
-          flexGrow: 1, // ⭐ fills remaining space
+          flexGrow: 1,
           display: "flex",
           flexDirection: "column",
+          p: 2,
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
+        {/* Title */}
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          sx={{
+            mb: 0.5,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
           {book.title}
         </Typography>
 
-        <Typography variant="body2" sx={{ color: "#bbb", mb: 1 }}>
+        {/* Author */}
+        <Typography
+          variant="body2"
+          sx={{ color: "#bbb", mb: 1 }}
+        >
           by {book.author}
         </Typography>
 
-        {/* ⭐ Rating */}
-        <Typography sx={{ color: "#ffb91f", mb: 1 }}>
-          {"★".repeat(Math.floor(book.rating))}
-          {"☆".repeat(5 - Math.floor(book.rating))}
-          <span style={{ marginLeft: 6 }}>({book.rating})</span>
+        {/* Rating */}
+        <Typography sx={{ color: "#ffb91f", fontSize: "14px", mb: 1 }}>
+          {"★".repeat(rating)}
+          {"☆".repeat(5 - rating)}
+          <span style={{ marginLeft: 6 }}>({rating}.0)</span>
         </Typography>
 
+        {/* Price */}
         <Typography
           sx={{
             color: "#00e676",
-            fontSize: "1.1rem",
             fontWeight: "bold",
+            fontSize: "1rem",
             mb: 2,
           }}
         >
           ₹{book.price}
         </Typography>
 
-        {/* ACTIONS – pinned to bottom */}
-        <Box sx={{ mt: "auto", display: "flex", flexDirection: "column", gap: 1 }}>
+        {/* ================= ACTIONS ================= */}
+        <Box
+          sx={{
+            mt: "auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+          }}
+        >
           <Button
             variant="contained"
             fullWidth
             sx={{
               background: "linear-gradient(90deg,#ffa500,#ff5e00)",
-              borderRadius: "30px",
+              borderRadius: "24px",
+              fontWeight: 600,
+              "&:hover": {
+                background: "linear-gradient(90deg,#ff5e00,#ffa500)",
+              },
             }}
             onClick={() => onViewDetails(book)}
           >
@@ -89,12 +135,14 @@ const BookCard = ({ book, onViewDetails, onAddToCart }) => {
             variant="outlined"
             fullWidth
             sx={{
+              borderRadius: "24px",
               color: "#ffa500",
               borderColor: "#ffa500",
-              borderRadius: "30px",
+              fontWeight: 600,
               "&:hover": {
                 borderColor: "#ff7b00",
                 color: "#ff7b00",
+                backgroundColor: "rgba(255,165,0,0.08)",
               },
             }}
             onClick={() => onAddToCart(book)}

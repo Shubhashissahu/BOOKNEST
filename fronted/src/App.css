@@ -9,9 +9,10 @@ html, body {
   overflow-x: hidden;
 }
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f9fafb;
+  background-color: #0d0d0d;
 }
+
+
 
 .hero-section {
     background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
