@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, Card, Button } from "@mui/material";
+import { Box, Typography, Card, Button, Grid } from "@mui/material";
 
 export default function CategorySection({
   categories,
@@ -10,16 +10,24 @@ export default function CategorySection({
   return (
     <Box
       ref={categoryRef}
-      sx={{ maxWidth: "1200px", mx: "auto", px: 4, mt: 10 }}
+      sx={{
+        width: "100%",
+        px: { xs: 2, md: 3 },
+        mt: 12,
+      }}
     >
       <Typography
-        variant="h4"
-        sx={{ mb: 2, fontWeight: "bold", color: "#ffa500" }}
+        sx={{
+          fontSize: "2rem",
+          fontWeight: 800,
+          color: "#ffa500",
+          mb: 2,
+        }}
       >
         Browse Our Collection
       </Typography>
 
-      <Typography sx={{ opacity: 0.7, mb: 4 }}>
+      <Typography sx={{ opacity: 0.75, mb: 4 }}>
         Explore books across different categories.
       </Typography>
 
@@ -27,11 +35,11 @@ export default function CategorySection({
         {categories.map((cat) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={cat.value}>
             <Card
+              className="category-card"
               onClick={() => onSelect(cat.value)}
               sx={{
                 p: 3,
                 textAlign: "center",
-                cursor: "pointer",
                 borderRadius: 4,
                 background:
                   selectedCategory === cat.value
@@ -40,11 +48,14 @@ export default function CategorySection({
                 border:
                   selectedCategory === cat.value
                     ? "2px solid #ffa500"
-                    : "1px solid rgba(255,255,255,0.1)",
+                    : "1px solid rgba(255,255,255,0.12)",
+                color: "white",
               }}
             >
-              <Box sx={{ fontSize: 48 }}>{cat.icon}</Box>
-              <Typography sx={{ fontWeight: "bold" }}>
+              <Box sx={{ fontSize: 42, mb: 1 }}>
+                {cat.icon}
+              </Box>
+              <Typography sx={{ fontWeight: 600 }}>
                 {cat.name}
               </Typography>
             </Card>
@@ -53,7 +64,10 @@ export default function CategorySection({
       </Grid>
 
       {selectedCategory !== "all" && (
-        <Button sx={{ mt: 3, color: "#ffa500" }} onClick={onClear}>
+        <Button
+          sx={{ mt: 4, color: "#ffa500" }}
+          onClick={onClear}
+        >
           Clear filter
         </Button>
       )}

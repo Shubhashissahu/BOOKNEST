@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { ThemeProvider, createTheme, CssBaseline, Container } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,7 +17,6 @@ import Footer from "./Components/Footer";
 import HomePage from "./Pages/Home";
 import ContactPage from "./Pages/ContactPage";
 import BooksPage from "./Pages/BooksPage";
-
 
 // Theme
 const theme = createTheme({
@@ -44,14 +43,14 @@ function App() {
       <CssBaseline />
 
       <Router>
-        {/* Navbar */}
+        {/* ✅ FIXED NAVBAR */}
         <NavBarMUI
           cartCount={cart.length}
           onCartClick={() => setShowCart(true)}
           onLoginClick={() => setShowLogin(true)}
         />
 
-        {/* Cart Drawer */}
+        {/* 🛒 Cart Drawer */}
         <ShoppingCartSheet
           isOpen={showCart}
           onClose={() => setShowCart(false)}
@@ -65,21 +64,22 @@ function App() {
               );
             }
           }}
-          onRemoveItem={(id) => setCart(cart.filter((item) => item.id !== id))}
+          onRemoveItem={(id) =>
+            setCart((prev) => prev.filter((item) => item.id !== id))
+          }
         />
 
-        {/* Login Modal */}
+        {/* 🔐 Login Modal */}
         <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
 
-        {/* Pages */}
-        <Container sx={{ py: 4 }}>
-        <Routes>
-  <Route path="/" element={<HomePage />} />
-  <Route path="/books" element={<BooksPage />} />
-  <Route path="/contact" element={<ContactPage />} />
-</Routes>
-
-        </Container>
+        {/* ✅ MAIN CONTENT (PUSHED BELOW NAVBAR) */}
+        <Box sx={{ pt: "80px", minHeight: "100vh" }}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/books" element={<BooksPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Routes>
+        </Box>
 
         {/* Footer */}
         <Footer />

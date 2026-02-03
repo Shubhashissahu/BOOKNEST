@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import HeroSection from "../Components/HeroSection";
 import CategorySection from "../Components/CategorySection";
 import BookCard from "../Components/BookCard";
-
+import ContactPage from "./ContactPage"; // 👈 ADD CONTACT PAGE
 import { books } from "../data/booksData";
 
 export default function Home() {
@@ -27,25 +27,16 @@ export default function Home() {
           (b) => b.category.toLowerCase() === selectedCategory
         );
 
-  // handlers (can be replaced with real logic later)
-  const handleViewDetails = (book) => {
-    console.log("View details:", book);
-  };
-
-  const handleAddToCart = (book) => {
-    console.log("Add to cart:", book);
-  };
-
   return (
-    <Box sx={{ color: "white" }}>
-      {/* HERO */}
+    <Box sx={{ width: "100%", color: "white" }}>
+      {/* ================= HERO ================= */}
       <HeroSection
         onBrowse={() =>
           categoryRef.current?.scrollIntoView({ behavior: "smooth" })
         }
       />
 
-      {/* CATEGORY */}
+      {/* ================= CATEGORY ================= */}
       <CategorySection
         categoryRef={categoryRef}
         categories={categories}
@@ -54,27 +45,29 @@ export default function Home() {
         onClear={() => setSelectedCategory("all")}
       />
 
-      {/* BOOK GRID */}
-      <Box
-        sx={{
-          maxWidth: "1200px",
-          mx: "auto",
-          px: { xs: 2, md: 4 },
-          mt: 6,
-        }}
-      >
-        <Grid container spacing={4}>
-          {filteredBooks.map((book) => (
-            <Grid item xs={12} sm={6} md={4} key={book.id}>
-              <BookCard
-                book={book}
-                onViewDetails={handleViewDetails}
-                onAddToCart={handleAddToCart}
-              />
-            </Grid>
-          ))}
-        </Grid>
+      {/* ================= BOOK GRID ================= */}
+      <Box sx={{ width: "100%", mt: 10 }}>
+        <Box
+          sx={{
+            maxWidth: 1200,
+            mx: "auto",
+            px: { xs: 2, md: 4 },
+            pb: 12,
+          }}
+        >
+          <Grid container spacing={4}>
+            {filteredBooks.map((book) => (
+              <Grid item xs={12} sm={6} md={4} key={book.id}>
+                <BookCard book={book} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Box>
+
+      {/* ================= CONTACT SECTION ================= */}
+      {/* Full width – NO container here */}
+      <ContactPage />
     </Box>
   );
 }

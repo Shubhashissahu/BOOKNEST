@@ -11,4 +11,14 @@
 .cursor-pointer {
   cursor: pointer;
 }
+html {
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+  overflow-x: clip; /* ✅ modern, safe */
+}
 

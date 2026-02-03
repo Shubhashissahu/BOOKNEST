@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.6",
     "axios": "^1.13.2",
     "framer-motion": "^12.23.26",
+    "lucide-react": "^0.563.0",
     "pdfjs-dist": "^5.4.449",
     "react": "^19.1.1",
     "react-bootstrap-icons": "^1.11.6",
