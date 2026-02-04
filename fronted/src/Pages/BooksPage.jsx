@@ -8,6 +8,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { toast } from "react-toastify";
+
 
 import BookCard from "../Components/BookCard";
 import BookDetailModal from "../Components/BookDetailModal";
@@ -72,20 +74,27 @@ const BooksPage = ({ cart, setCart }) => {
      Cart logic
   =============================== */
   const handleAddToCart = (book) => {
-    const exists = cart.find((item) => item.id === book.id);
+  const exists = cart.find((item) => item.id === book.id);
 
-    if (exists) {
-      setCart((prev) =>
-        prev.map((item) =>
-          item.id === book.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart((prev) => [...prev, { ...book, quantity: 1 }]);
-    }
-  };
+  if (exists) {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === book.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+
+    // ✅ quantity updated toast
+    toast.info("Item quantity updated");
+  } else {
+    setCart((prev) => [...prev, { ...book, quantity: 1 }]);
+
+    // ✅ added toast
+    toast.success("Added to cart successfully");
+  }
+};
+
 
   return (
     <Box

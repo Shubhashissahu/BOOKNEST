@@ -1,30 +1,37 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
-import { ToastContainer } from "react-toastify";
-import { Toolbar } from "@mui/material";
+import {
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  Box,
+  Toolbar,
+} from "@mui/material";
 
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// MUI Navbar
-import NavBarMUI from "./Components/NavBarMUI";
-
 // Components
+import NavBarMUI from "./Components/NavBarMUI";
 import LoginModal from "./Components/LoginModal";
 import ShoppingCartSheet from "./Components/ShoppingCartSheet";
 import Footer from "./Components/Footer";
 
 // Pages
 import HomePage from "./Pages/Home";
-import ContactPage from "./Pages/ContactPage";
 import BooksPage from "./Pages/BooksPage";
+import ContactPage from "./Pages/ContactPage";
 
-// Theme
+/* =====================
+   MUI THEME
+===================== */
 const theme = createTheme({
   palette: {
     mode: "dark",
-    primary: { main: "#ffa500" },
+    primary: {
+      main: "#ffa500",
+    },
     background: {
       default: "#0d0d0d",
       paper: "#111",
@@ -45,14 +52,14 @@ function App() {
       <CssBaseline />
 
       <Router>
-        {/* ✅ FIXED NAVBAR */}
+        {/* ================= NAVBAR ================= */}
         <NavBarMUI
           cartCount={cart.length}
           onCartClick={() => setShowCart(true)}
           onLoginClick={() => setShowLogin(true)}
         />
 
-        {/* 🛒 Cart Drawer */}
+        {/* ================= CART DRAWER ================= */}
         <ShoppingCartSheet
           isOpen={showCart}
           onClose={() => setShowCart(false)}
@@ -71,25 +78,40 @@ function App() {
           }
         />
 
-        {/* 🔐 Login Modal */}
-        <LoginModal show={showLogin} onClose={() => setShowLogin(false)} />
+        {/* ================= LOGIN MODAL ================= */}
+        <LoginModal
+          show={showLogin}
+          onClose={() => setShowLogin(false)}
+        />
 
-        {/* ✅ MAIN CONTENT (PUSHED BELOW NAVBAR) */}
-      <Box sx={{ minHeight: "100vh" }}>
-  <Toolbar /> {/* exact AppBar height */}
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/books" element={<BooksPage />} />
-    <Route path="/contact" element={<ContactPage />} />
-  </Routes>
-</Box>
+        {/* ================= MAIN CONTENT ================= */}
+        <Box sx={{ minHeight: "100vh" }}>
+          {/* Push content below AppBar */}
+          <Toolbar />
 
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/books"
+              element={<BooksPage cart={cart} setCart={setCart} />}
+            />
+            <Route path="/contact" element={<ContactPage />} />
+          </Routes>
+        </Box>
 
-        {/* Footer */}
+        {/* ================= FOOTER ================= */}
         <Footer />
 
-        {/* Toast */}
-        <ToastContainer />
+        {/* ================= TOAST ================= */}
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          theme="dark"
+          style={{ zIndex: 20000 }} // ⭐ fixes toast hidden issue
+        />
       </Router>
     </ThemeProvider>
   );

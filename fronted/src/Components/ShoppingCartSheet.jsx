@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Drawer,
   Box,
@@ -12,6 +12,7 @@ import {
   ListItemAvatar,
   Avatar,
 } from "@mui/material";
+import { toast } from "react-toastify";
 
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -25,11 +26,19 @@ export default function ShoppingCartSheet({
   onUpdateQuantity,
   onRemoveItem,
 }) {
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  /* ======================
+     Price Calculations
+  ====================== */
+  const subtotal = useMemo(
+    () =>
+      cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
+    [cartItems]
   );
-  const shipping = subtotal > 0 ? 5.99 : 0;
+
+  const shipping = subtotal > 0 ? 99 : 0; // ₹99 flat shipping
   const total = subtotal + shipping;
 
   return (
@@ -39,32 +48,32 @@ export default function ShoppingCartSheet({
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: 360,
+          width: { xs: "100%", sm: 380 },
           background: "#111",
-          color: "white",
+          color: "#fff",
           p: 2,
         },
       }}
     >
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        <Typography variant="h6" fontWeight="bold">
           Shopping Cart
         </Typography>
 
-        <IconButton onClick={onClose} sx={{ color: "white" }}>
+        <IconButton onClick={onClose} sx={{ color: "#fff" }}>
           <CloseIcon />
         </IconButton>
       </Box>
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.1)" }} />
 
-      {/* EMPTY CART */}
+      {/* ================= EMPTY CART ================= */}
       {cartItems.length === 0 ? (
         <Typography
           textAlign="center"
@@ -74,7 +83,7 @@ export default function ShoppingCartSheet({
         </Typography>
       ) : (
         <>
-          {/* CART ITEMS LIST */}
+          {/* ================= CART ITEMS ================= */}
           <List sx={{ mt: 2 }}>
             {cartItems.map((item) => (
               <ListItem
@@ -90,12 +99,19 @@ export default function ShoppingCartSheet({
                     src={item.image}
                     variant="rounded"
                     sx={{ width: 60, height: 80, mr: 1 }}
+                    onError={(e) => {
+                      e.target.src =
+                        "https://via.placeholder.com/60x80?text=No+Cover";
+                    }}
                   />
                 </ListItemAvatar>
 
                 <ListItemText
                   primary={
-                    <Typography sx={{ fontWeight: "bold", color: "#ffa500" }}>
+                    <Typography
+                      sx={{ fontWeight: "bold", color: "#ffa500" }}
+                      noWrap
+                    >
                       {item.title}
                     </Typography>
                   }
@@ -104,46 +120,53 @@ export default function ShoppingCartSheet({
                       <Typography variant="body2" sx={{ opacity: 0.6 }}>
                         {item.author}
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        ${item.price}
+                      <Typography variant="body2" fontWeight="bold">
+                        ₹{item.price}
                       </Typography>
                     </>
                   }
                 />
 
-                {/* QUANTITY CONTROLS */}
+                {/* ================= QUANTITY ================= */}
                 <Box
                   display="flex"
                   flexDirection="column"
                   alignItems="center"
-                  justifyContent="center"
                   mx={1}
                 >
                   <IconButton
                     size="small"
-                    onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                     sx={{ color: "#ffa500" }}
+                    onClick={() =>
+                      onUpdateQuantity(item.id, item.quantity + 1)
+                    }
                   >
                     <AddIcon />
                   </IconButton>
 
-                  <Typography sx={{ my: 0.5 }}>{item.quantity}</Typography>
+                  <Typography sx={{ my: 0.5 }}>
+                    {item.quantity}
+                  </Typography>
 
                   <IconButton
                     size="small"
-                    onClick={() =>
-                      onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))
-                    }
                     sx={{ color: "#ffa500" }}
+                    disabled={item.quantity === 1}
+                    onClick={() =>
+                      onUpdateQuantity(item.id, item.quantity - 1)
+                    }
                   >
                     <RemoveIcon />
                   </IconButton>
                 </Box>
 
-                {/* REMOVE ITEM */}
+                {/* ================= REMOVE ITEM ================= */}
                 <IconButton
-                  onClick={() => onRemoveItem(item.id)}
-                  sx={{ color: "red" }}
+                  onClick={() => {
+                    onRemoveItem(item.id);
+                    toast.error("Item removed from cart");
+                  }}
+                  sx={{ color: "#ff5252" }}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -151,17 +174,17 @@ export default function ShoppingCartSheet({
             ))}
           </List>
 
-          {/* PRICE SUMMARY */}
+          {/* ================= SUMMARY ================= */}
           <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.1)" }} />
 
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography>Subtotal</Typography>
-            <Typography>${subtotal.toFixed(2)}</Typography>
+            <Typography>₹{subtotal.toFixed(2)}</Typography>
           </Box>
 
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography>Shipping</Typography>
-            <Typography>${shipping.toFixed(2)}</Typography>
+            <Typography>₹{shipping.toFixed(2)}</Typography>
           </Box>
 
           <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
@@ -169,17 +192,16 @@ export default function ShoppingCartSheet({
           <Box display="flex" justifyContent="space-between" mb={2}>
             <Typography variant="h6">Total</Typography>
             <Typography variant="h6" sx={{ color: "#ffa500" }}>
-              ${total.toFixed(2)}
+              ₹{total.toFixed(2)}
             </Typography>
           </Box>
 
-          {/* CHECKOUT BUTTON */}
+          {/* ================= CHECKOUT ================= */}
           <Button
             fullWidth
             variant="contained"
             sx={{
               py: 1.5,
-              mt: 1,
               background: "linear-gradient(90deg,#ffa500,#ff5e00)",
               fontWeight: "bold",
               borderRadius: "30px",
