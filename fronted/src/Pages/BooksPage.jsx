@@ -9,13 +9,16 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { toast } from "react-toastify";
-
+import { useSearchParams } from "react-router-dom";
 
 import BookCard from "../Components/BookCard";
 import BookDetailModal from "../Components/BookDetailModal";
 import openLibraryApi from "../Services/openLibrary";
 
 const BooksPage = ({ cart, setCart }) => {
+  /* ================= HOOKS ================= */
+  const [searchParams] = useSearchParams();
+
   const [query, setQuery] = useState("harry potter");
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,9 +26,7 @@ const BooksPage = ({ cart, setCart }) => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  /* ===============================
-     Normalize Open Library data
-  =============================== */
+  /* ================= NORMALIZE ================= */
   const normalizeBook = (doc) => {
     const coverId = doc.cover_i;
 
@@ -41,19 +42,16 @@ const BooksPage = ({ cart, setCart }) => {
     };
   };
 
-  /* ===============================
-     Fetch books
-  =============================== */
-  const fetchBooks = async (newPage = 1) => {
-    if (!query.trim()) return;
+  /* ================= FETCH ================= */
+  const fetchBooks = async (searchQuery, newPage = 1) => {
+    if (!searchQuery.trim()) return;
 
     setLoading(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     try {
-      const data = await openLibraryApi.searchBooks(query, newPage);
-      const formatted = (data.docs || []).map(normalizeBook);
-      setBooks(formatted);
+      const data = await openLibraryApi.searchBooks(searchQuery, newPage);
+      setBooks((data.docs || []).map(normalizeBook));
       setPage(newPage);
     } catch (error) {
       console.error("Open Library Error:", error);
@@ -63,44 +61,40 @@ const BooksPage = ({ cart, setCart }) => {
     }
   };
 
-  /* ===============================
-     Initial load
-  =============================== */
+  /* ================= URL CATEGORY ================= */
   useEffect(() => {
-    fetchBooks(1);
-  }, []);
+    const category = searchParams.get("category");
+    const initialQuery = category || "harry potter";
 
-  /* ===============================
-     Cart logic
-  =============================== */
+    setQuery(initialQuery);
+    fetchBooks(initialQuery, 1);
+  }, [searchParams]);
+
+  /* ================= CART ================= */
   const handleAddToCart = (book) => {
-  const exists = cart.find((item) => item.id === book.id);
+    const exists = cart.find((item) => item.id === book.id);
 
-  if (exists) {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === book.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
+    if (exists) {
+      setCart((prev) =>
+        prev.map((item) =>
+          item.id === book.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+      toast.info("Item quantity updated");
+    } else {
+      setCart((prev) => [...prev, { ...book, quantity: 1 }]);
+      toast.success("Added to cart successfully");
+    }
+  };
 
-    // ✅ quantity updated toast
-    toast.info("Item quantity updated");
-  } else {
-    setCart((prev) => [...prev, { ...book, quantity: 1 }]);
-
-    // ✅ added toast
-    toast.success("Added to cart successfully");
-  }
-};
-
-
+  /* ================= UI ================= */
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        pt: 2,          // ✅ reduced top padding (no gap)
+        pt: 2,
         pb: 4,
         px: 2,
         background:
@@ -108,7 +102,7 @@ const BooksPage = ({ cart, setCart }) => {
       }}
     >
       <Box sx={{ maxWidth: "1300px", mx: "auto" }}>
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         <Typography
           variant="h4"
           sx={{
@@ -121,12 +115,11 @@ const BooksPage = ({ cart, setCart }) => {
           Browse Books
         </Typography>
 
-        {/* ================= SEARCH ================= */}
+        {/* SEARCH */}
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
             gap: 2,
             mb: 3,
           }}
@@ -135,45 +128,27 @@ const BooksPage = ({ cart, setCart }) => {
             size="small"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && fetchBooks(1)}
+            onKeyDown={(e) => e.key === "Enter" && fetchBooks(query, 1)}
             placeholder="Search books..."
             InputProps={{
               startAdornment: (
                 <SearchIcon sx={{ color: "#ffa500", mr: 1 }} />
               ),
             }}
-            sx={{
-              width: 260,
-              backgroundColor: "#111",
-              borderRadius: 1,
-            }}
+            sx={{ width: 260, backgroundColor: "#111", borderRadius: 1 }}
           />
 
           <Button
             variant="contained"
             color="warning"
             disabled={loading}
-            onClick={() => fetchBooks(1)}
+            onClick={() => fetchBooks(query, 1)}
           >
             {loading ? <CircularProgress size={20} /> : "Search"}
           </Button>
         </Box>
 
-        {/* ================= LOADING ================= */}
-        {loading && books.length === 0 && (
-          <Box sx={{ textAlign: "center", mt: 4 }}>
-            <CircularProgress sx={{ color: "#ffa500" }} />
-          </Box>
-        )}
-
-        {/* ================= EMPTY STATE ================= */}
-        {!loading && books.length === 0 && (
-          <Typography sx={{ textAlign: "center", color: "#aaa", mt: 4 }}>
-            No books found
-          </Typography>
-        )}
-
-        {/* ================= BOOK GRID ================= */}
+        {/* GRID */}
         <Grid container spacing={3} alignItems="stretch">
           {books.map((book) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
@@ -189,19 +164,12 @@ const BooksPage = ({ cart, setCart }) => {
           ))}
         </Grid>
 
-        {/* ================= PAGINATION ================= */}
+        {/* PAGINATION */}
         {books.length > 0 && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-              mt: 4,
-            }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
             <Button
               disabled={page === 1 || loading}
-              onClick={() => fetchBooks(page - 1)}
+              onClick={() => fetchBooks(query, page - 1)}
             >
               Prev
             </Button>
@@ -211,15 +179,15 @@ const BooksPage = ({ cart, setCart }) => {
             </Typography>
 
             <Button
-              disabled={loading || books.length < 100}
-              onClick={() => fetchBooks(page + 1)}
+              disabled={loading}
+              onClick={() => fetchBooks(query, page + 1)}
             >
               Next
             </Button>
           </Box>
         )}
 
-        {/* ================= MODAL ================= */}
+        {/* MODAL */}
         <BookDetailModal
           open={modalOpen}
           book={selectedBook}

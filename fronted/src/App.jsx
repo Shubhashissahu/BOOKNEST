@@ -90,7 +90,11 @@ function App() {
           <Toolbar />
 
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route
+  path="/"
+  element={<HomePage cart={cart} setCart={setCart} />}
+/>
+
             <Route
               path="/books"
               element={<BooksPage cart={cart} setCart={setCart} />}

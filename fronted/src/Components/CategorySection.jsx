@@ -1,76 +1,68 @@
-import { Box, Typography, Card, Button, Grid } from "@mui/material";
+import { Box, Typography, Grid, Paper } from "@mui/material";
 
 export default function CategorySection({
+  categoryRef,
   categories,
   selectedCategory,
   onSelect,
-  onClear,
-  categoryRef,
 }) {
   return (
     <Box
       ref={categoryRef}
       sx={{
-        width: "100%",
-        px: { xs: 2, md: 3 },
-        mt: 12,
+        mt: 6,
+        mb: 4,
+        maxWidth: "1300px",
+        mx: "auto",
+        px: 2,
       }}
     >
       <Typography
+        variant="h5"
         sx={{
-          fontSize: "2rem",
-          fontWeight: 800,
           color: "#ffa500",
-          mb: 2,
+          mb: 1,
+          fontWeight: "bold",
         }}
       >
         Browse Our Collection
       </Typography>
 
-      <Typography sx={{ opacity: 0.75, mb: 4 }}>
+      <Typography sx={{ color: "#aaa", mb: 3 }}>
         Explore books across different categories.
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {categories.map((cat) => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={cat.value}>
-            <Card
-              className="category-card"
+          <Grid item xs={6} sm={4} md={2} key={cat.value}>
+            <Paper
               onClick={() => onSelect(cat.value)}
+              elevation={0}
               sx={{
-                p: 3,
+                p: 2,
                 textAlign: "center",
-                borderRadius: 4,
+                cursor: "pointer",
+                borderRadius: 3,
                 background:
                   selectedCategory === cat.value
-                    ? "linear-gradient(135deg,#ffa50033,#ff5e0033)"
-                    : "rgba(255,255,255,0.06)",
-                border:
-                  selectedCategory === cat.value
-                    ? "2px solid #ffa500"
-                    : "1px solid rgba(255,255,255,0.12)",
-                color: "white",
+                    ? "linear-gradient(90deg,#ffa500,#ff5e00)"
+                    : "#111",
+                color:
+                  selectedCategory === cat.value ? "#000" : "#fff",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                },
               }}
             >
-              <Box sx={{ fontSize: 42, mb: 1 }}>
-                {cat.icon}
-              </Box>
-              <Typography sx={{ fontWeight: 600 }}>
+              <Typography fontSize={28}>{cat.icon}</Typography>
+              <Typography fontWeight="bold" fontSize={14}>
                 {cat.name}
               </Typography>
-            </Card>
+            </Paper>
           </Grid>
         ))}
       </Grid>
-
-      {selectedCategory !== "all" && (
-        <Button
-          sx={{ mt: 4, color: "#ffa500" }}
-          onClick={onClear}
-        >
-          Clear filter
-        </Button>
-      )}
     </Box>
   );
 }

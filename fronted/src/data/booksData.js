@@ -5,81 +5,133 @@ export const books = [
     author: "F. Scott Fitzgerald",
     category: "fiction",
     price: 299,
-    cover: "https://images.unsplash.com/photo-1543002588-d4d8c8b0c0b0?w=300&h=400&fit=crop",
-    description:
-      "A classic novel set in the Jazz Age that explores wealth, love, and the American Dream.",
     rating: 4.5,
-    pages: 180,
-    pdfUrl: "https://example.com/gatsby.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
   },
-
   {
     id: 2,
     title: "Sapiens",
     author: "Yuval Noah Harari",
-    category: "science-fiction", // FIXED (previously 'science')
+    category: "science",
     price: 399,
-    cover: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&h=400&fit=crop",
-    description:
-      "A sweeping history of humankind exploring science, evolution, and the future.",
     rating: 4.7,
-    pages: 443,
-    pdfUrl: "https://example.com/sapiens.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80",
   },
-
   {
     id: 3,
     title: "1984",
     author: "George Orwell",
-    category: "mystery", // FIXED (fits with UI category)
+    category: "fiction",
     price: 279,
-    cover: "https://images.unsplash.com/photo-1507842705857-6b0e1fbf4e4f?w=300&h=400&fit=crop",
-    description:
-      "A dystopian social science fiction novel and powerful cautionary tale.",
     rating: 4.6,
-    pages: 328,
-    pdfUrl: "https://example.com/1984.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80",
   },
-
   {
     id: 4,
     title: "Atomic Habits",
     author: "James Clear",
     category: "self-help",
     price: 349,
-    cover: "https://images.unsplash.com/photo-1495446815901-130dbca6caf9?w=300&h=400&fit=crop",
-    description:
-      "A practical guide to building good habits and breaking the bad ones.",
     rating: 4.8,
-    pages: 320,
-    pdfUrl: "https://example.com/atomic-habits.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&q=80",
   },
-
   {
     id: 5,
     title: "The Lean Startup",
     author: "Eric Ries",
     category: "business",
     price: 329,
-    cover: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=300&h=400&fit=crop",
-    description:
-      "How innovative entrepreneurs use continuous improvement to build successful startups.",
     rating: 4.4,
-    pages: 299,
-    pdfUrl: "https://example.com/lean-startup.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=600&q=80",
   },
-
   {
     id: 6,
     title: "A Brief History of Time",
     author: "Stephen Hawking",
-    category: "history", // FIXED (previously 'science')
+    category: "science",
     price: 369,
-    cover: "https://images.unsplash.com/photo-1507842705857-6b0e1fbf4e4f?w=300&h=400&fit=crop",
-    description:
-      "A fascinating exploration of cosmology, black holes, and the universe.",
     rating: 4.5,
-    pages: 256,
-    pdfUrl: "https://example.com/history-time.pdf",
+    trending: true,
+    image:
+      "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=600&q=80",
+  },
+
+  /* ---------- MORE BOOKS ---------- */
+
+  {
+    id: 7,
+    title: "Rich Dad Poor Dad",
+    author: "Robert T. Kiyosaki",
+    category: "business",
+    price: 299,
+    rating: 4.3,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1455885666463-5d62e4ad9f37?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 8,
+    title: "Think and Grow Rich",
+    author: "Napoleon Hill",
+    category: "self-help",
+    price: 259,
+    rating: 4.4,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 9,
+    title: "The Alchemist",
+    author: "Paulo Coelho",
+    category: "fiction",
+    price: 289,
+    rating: 4.6,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1491841651911-c44c30c34548?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 10,
+    title: "The Psychology of Money",
+    author: "Morgan Housel",
+    category: "business",
+    price: 349,
+    rating: 4.7,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 11,
+    title: "Ikigai",
+    author: "Héctor García",
+    category: "self-help",
+    price: 299,
+    rating: 4.5,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 12,
+    title: "Guns, Germs, and Steel",
+    author: "Jared Diamond",
+    category: "history",
+    price: 389,
+    rating: 4.4,
+    trending: false,
+    image:
+      "https://images.unsplash.com/photo-1473755504818-b72b6dfdc226?auto=format&fit=crop&w=600&q=80",
   },
 ];
