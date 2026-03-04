@@ -97,16 +97,16 @@ export default function ContactPage() {
               mb: 3,
             }}
           >
-            <AutoAwesomeIcon sx={{ fontSize: 18 }} />
+            <AutoAwesomeIcon sx={{ fontSize: 16 }} />
             <Typography fontSize={14}>Get In Touch</Typography>
           </Box>
 
-          <Typography variant="h3" fontWeight={600} mb={2}>
+          <Typography variant="h3" fontWeight={500} mb={2}>
             We'd Love to Hear From You
           </Typography>
 
           <Typography
-            sx={{ color: "rgba(255,255,255,0.65)", maxWidth: 720, mx: "auto" }}
+            sx={{ color: "rgba(255,255,255,0.65)", maxWidth: 600, mx: "auto" }}
           >
             Have a question about our books or need assistance? Our dedicated team
             is here to help you find your next great read.
@@ -114,7 +114,7 @@ export default function ContactPage() {
         </Box>
 
         {/* MAIN LAYOUT – TRUE 2 COLUMNS */}
-        <Grid container spacing={6}>
+        <Grid container spacing={5}>
           {/* LEFT COLUMN – INFO CARDS */}
           <Grid item xs={12} md={5}>
             <Box>
@@ -204,7 +204,7 @@ export default function ContactPage() {
                 </Typography>
 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                  <Grid container spacing={3} sx={{ mb: 2, flex: 1 }}>
+                 <Grid container spacing={3} sx={{ flexGrow: 1 }}>
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
