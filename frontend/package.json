@@ -14,7 +14,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
-    "axios": "^1.13.4",
+    "axios": "^1.13.6",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.563.0",
     "pdfjs-dist": "^5.4.449",

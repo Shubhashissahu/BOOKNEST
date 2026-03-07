@@ -10,9 +10,50 @@ import {
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { loginUser, registerUser } from "../api/auth";
 
 export default function LoginModal({ show, onClose }) {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const resetFields = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (isLogin) {
+        const res = await loginUser({ email, password });
+
+        localStorage.setItem("token", res.data.token);
+
+        alert("Login Successful");
+        resetFields();
+        onClose();
+      } else {
+        await registerUser({ name, email, password });
+
+        alert("Registration Successful");
+        resetFields();
+        setIsLogin(true);
+      }
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Something went wrong";
+      alert(message);
+    }
+  };
+
+  const handleSwitch = () => {
+    setIsLogin(!isLogin);
+    resetFields();
+  };
 
   return (
     <Dialog
@@ -53,7 +94,7 @@ export default function LoginModal({ show, onClose }) {
 
       {/* BODY */}
       <DialogContent sx={{ mt: 2 }}>
-        <Box component="form">
+        <Box component="form" onSubmit={handleSubmit}>
           {/* Full Name (Register Only) */}
           {!isLogin && (
             <TextField
@@ -61,10 +102,10 @@ export default function LoginModal({ show, onClose }) {
               label="Full Name"
               variant="outlined"
               margin="normal"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               InputLabelProps={{ style: { color: "white" } }}
-              InputProps={{
-                style: { color: "white" },
-              }}
+              InputProps={{ style: { color: "white" } }}
             />
           )}
 
@@ -75,10 +116,10 @@ export default function LoginModal({ show, onClose }) {
             label="Email"
             variant="outlined"
             margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputLabelProps={{ style: { color: "white" } }}
-            InputProps={{
-              style: { color: "white" },
-            }}
+            InputProps={{ style: { color: "white" } }}
           />
 
           {/* Password */}
@@ -88,14 +129,15 @@ export default function LoginModal({ show, onClose }) {
             label="Password"
             variant="outlined"
             margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputLabelProps={{ style: { color: "white" } }}
-            InputProps={{
-              style: { color: "white" },
-            }}
+            InputProps={{ style: { color: "white" } }}
           />
 
           {/* Submit Button */}
           <Button
+            type="submit"
             variant="contained"
             fullWidth
             sx={{
@@ -122,7 +164,7 @@ export default function LoginModal({ show, onClose }) {
         >
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <span
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={handleSwitch}
             style={{
               color: "#ffa500",
               cursor: "pointer",
