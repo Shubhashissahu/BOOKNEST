@@ -1,31 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  InputBase,
-  Badge,
-  Menu,
-  MenuItem,
+  AppBar, Box, Toolbar, IconButton, Typography, InputBase, Badge,
+  Menu, MenuItem, Avatar, Divider, ListItemIcon, ListItemText,
+  Button, Tooltip
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import { Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Button } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import  { useContext } from "react";
-import  LoginModal from "./LoginModal";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 import { AuthContext } from "../context/AuthContext";
 
-/* ---------------- STYLED SEARCH ---------------- */
-
+/* SEARCH */
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 30,
@@ -45,27 +41,25 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
-  width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 5),
     fontSize: "0.95rem",
   },
 }));
 
-/* ---------------- NAVBAR ---------------- */
+export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) {
 
-export default function NavBarMUI({
-  cartCount = 0,
-  onCartClick,
-  onLoginClick,
-}) {
-   const { userToken, logout } = useContext(AuthContext);
+  const { userToken, user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [profileAnchor, setProfileAnchor] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const scroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", scroll);
+    return () => window.removeEventListener("scroll", scroll);
   }, []);
 
   const navLinks = [
@@ -76,93 +70,181 @@ export default function NavBarMUI({
     { label: "Contact", path: "/contact" },
   ];
 
+  const profileMenu = [
+    { label: "My Profile", path: "/profile", icon: <AccountCircleIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+    { label: "Dashboard", path: "/dashboard", icon: <DashboardIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+    { label: "Wishlist", path: "/wishlist", icon: <FavoriteIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+    { label: "Settings", path: "/settings", icon: <SettingsIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+  ];
+
+  const menuItemStyle = {
+    py:1.2, px:2,
+    color:"rgba(255,255,255,0.85)",
+    "&:hover":{backgroundColor:"rgba(255,165,0,0.08)",color:"#ffa500"},
+    transition:"all 0.2s"
+  };
+
+  const getInitials = (name) => name ? name.charAt(0).toUpperCase() : "U";
+
+  const handleLogout = () => {
+    setProfileAnchor(null);
+    logout();
+    navigate("/");
+  };
+
   return (
-    <AppBar
-      position="fixed"   // ✅ FIXED (not sticky)
-      elevation={0}
+    <AppBar position="fixed" elevation={0}
       sx={{
-        background: scrolled
-          ? "rgba(11,11,11,0.95)"
-          : "rgba(11,11,11,0.85)",
+        background: scrolled ? "rgba(11,11,11,0.95)" : "rgba(11,11,11,0.85)",
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid rgba(255,165,0,0.15)",
       }}
     >
-      <Toolbar sx={{ minHeight: 70, justifyContent: "space-between" }}>
+
+      <Toolbar sx={{ minHeight:70, justifyContent:"space-between" }}>
+
         {/* LOGO */}
         <Box display="flex" alignItems="center" gap={1}>
-          <MenuBookIcon sx={{ color: "#ffa500", fontSize: 28 }} />
-          <Link to="/" style={{ textDecoration: "none" }}>
-            <Typography
-              variant="h5"
+          <MenuBookIcon sx={{ color:"#ffa500", fontSize:28 }}/>
+          <Link to="/" style={{ textDecoration:"none" }}>
+            <Typography variant="h5"
               sx={{
-                fontWeight: 700,
-                background: "linear-gradient(90deg,#ffa500,#ff5e00)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
+                fontWeight:700,
+                background:"linear-gradient(90deg,#ffa500,#ff5e00)",
+                WebkitBackgroundClip:"text",
+                WebkitTextFillColor:"transparent"
+              }}>
               BOOKNEST
             </Typography>
           </Link>
         </Box>
 
-        {/* LINKS */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-          {navLinks.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              style={{ textDecoration: "none", color: "white" }}
-            >
-              <Typography sx={{ "&:hover": { color: "#ffa500" } }}>
-                {item.label}
-              </Typography>
+        {/* NAV LINKS */}
+        <Box sx={{ display:{ xs:"none", md:"flex"}, gap:3 }}>
+          {navLinks.map(n => (
+            <Link key={n.path} to={n.path} style={{ textDecoration:"none", color:"white" }}>
+              <Typography sx={{ "&:hover":{color:"#ffa500"} }}>{n.label}</Typography>
             </Link>
           ))}
         </Box>
 
         {/* SEARCH */}
-        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <Box sx={{ display:{ xs:"none", sm:"block" } }}>
           <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
+            <SearchIconWrapper><SearchIcon/></SearchIconWrapper>
             <StyledInputBase placeholder="Search books…" />
           </Search>
         </Box>
 
-        {/* ICONS */}
-        <Box display="flex" gap={1}>
-          <IconButton color="inherit">
-            <DarkModeIcon />
-          </IconButton>
+        {/* RIGHT SIDE */}
+        <Box display="flex" alignItems="center" gap={1}>
 
-          <IconButton color="inherit" onClick={onLoginClick}>
-            <AccountCircleIcon />
-          </IconButton>
-         {userToken ? (
-  <Button color="inherit" onClick={logout}>
-    Logout
-  </Button>
-) : (
-  <Button color="inherit" onClick={LoginModal}>
-    Login
-  </Button>
-)}
+          <IconButton color="inherit"><DarkModeIcon/></IconButton>
+
           <IconButton color="inherit" onClick={onCartClick}>
             <Badge badgeContent={cartCount} color="warning">
-              <ShoppingCartIcon />
+              <ShoppingCartIcon/>
             </Badge>
           </IconButton>
 
+          {userToken ? (
+            <>
+              {/* PROFILE BUTTON */}
+              <Tooltip title="Account">
+                <Box onClick={(e)=>setProfileAnchor(e.currentTarget)}
+                  sx={{
+                    display:"flex",alignItems:"center",gap:0.8,cursor:"pointer",
+                    px:1.5,py:0.6,borderRadius:"30px",
+                    border:"1px solid rgba(255,165,0,0.4)",
+                    "&:hover":{backgroundColor:"rgba(255,165,0,0.1)"}
+                  }}>
+                  <Avatar sx={{width:32,height:32,bgcolor:"#ffa500",color:"#000"}}>
+                    {getInitials(user?.name)}
+                  </Avatar>
+                  <Typography sx={{ display:{xs:"none",sm:"block"} }}>
+                    {user?.name?.split(" ")[0] || "User"}
+                  </Typography>
+                  <KeyboardArrowDownIcon sx={{fontSize:18}}/>
+                </Box>
+              </Tooltip>
+
+              {/* PROFILE MENU */}
+              <Menu
+                anchorEl={profileAnchor}
+                open={Boolean(profileAnchor)}
+                onClose={()=>setProfileAnchor(null)}
+                transformOrigin={{horizontal:"right",vertical:"top"}}
+                anchorOrigin={{horizontal:"right",vertical:"bottom"}}
+                PaperProps={{
+                  sx:{
+                    mt:1.5,minWidth:220,
+                    backgroundColor:"#1a1a1a",
+                    border:"1px solid rgba(255,165,0,0.2)",
+                    borderRadius:"12px",color:"white"
+                  }
+                }}
+              >
+
+                <Box sx={{ px:2, py:1.5 }}>
+                  <Typography sx={{fontWeight:700}}>
+                    {user?.name || "User"}
+                  </Typography>
+                  <Typography sx={{fontSize:"0.78rem",color:"rgba(255,255,255,0.45)"}}>
+                    {user?.email || "you@gmail.com"}
+                  </Typography>
+                </Box>
+
+                <Divider sx={{borderColor:"rgba(255,165,0,0.15)",mx:1}}/>
+
+                {profileMenu.map((item)=>(
+                  <MenuItem
+                    key={item.label}
+                    component={Link}
+                    to={item.path}
+                    onClick={()=>setProfileAnchor(null)}
+                    sx={menuItemStyle}
+                  >
+                    <ListItemIcon sx={{minWidth:36}}>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.label}/>
+                  </MenuItem>
+                ))}
+
+                <Divider sx={{borderColor:"rgba(255,165,0,0.15)",mx:1,my:0.5}}/>
+
+                <MenuItem onClick={handleLogout}
+                  sx={{py:1.2,px:2,color:"#ff4d4d"}}>
+                  <ListItemIcon sx={{minWidth:36}}>
+                    <LogoutIcon sx={{color:"#ff4d4d",fontSize:20}}/>
+                  </ListItemIcon>
+                  <ListItemText primary="Sign Out"/>
+                </MenuItem>
+
+              </Menu>
+            </>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={onLoginClick}
+              sx={{
+                color:"#ffa500",
+                borderColor:"rgba(255,165,0,0.5)",
+                borderRadius:"20px",
+                textTransform:"none"
+              }}>
+              Login
+            </Button>
+          )}
+
           <IconButton
             color="inherit"
-            sx={{ display: { xs: "block", md: "none" } }}
-            onClick={(e) => setMenuAnchor(e.currentTarget)}
+            sx={{ display:{ xs:"block", md:"none"} }}
+            onClick={(e)=>setMenuAnchor(e.currentTarget)}
           >
-            <MenuIcon />
+            <MenuIcon/>
           </IconButton>
+
         </Box>
       </Toolbar>
 
@@ -170,19 +252,29 @@ export default function NavBarMUI({
       <Menu
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
-        onClose={() => setMenuAnchor(null)}
+        onClose={()=>setMenuAnchor(null)}
+        PaperProps={{
+          sx:{
+            backgroundColor:"#1a1a1a",
+            color:"white",
+            border:"1px solid rgba(255,165,0,0.2)",
+            borderRadius:"10px"
+          }
+        }}
       >
-        {navLinks.map((item) => (
+        {navLinks.map(n=>(
           <MenuItem
-            key={item.path}
+            key={n.path}
             component={Link}
-            to={item.path}
-            onClick={() => setMenuAnchor(null)}
+            to={n.path}
+            onClick={()=>setMenuAnchor(null)}
+            sx={{ "&:hover":{color:"#ffa500"} }}
           >
-            {item.label}
+            {n.label}
           </MenuItem>
         ))}
       </Menu>
+
     </AppBar>
   );
 }
