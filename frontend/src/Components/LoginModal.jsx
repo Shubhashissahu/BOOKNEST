@@ -11,8 +11,12 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { loginUser, registerUser } from "../api/auth";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function LoginModal({ show, onClose }) {
+  const { login } = useContext(AuthContext);
+
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,9 +34,7 @@ export default function LoginModal({ show, onClose }) {
     try {
       if (isLogin) {
         const res = await loginUser({ email, password });
-
-        localStorage.setItem("token", res.data.token);
-
+         login(res.data.token);
         alert("Login Successful");
         resetFields();
         onClose();

@@ -18,7 +18,11 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Button } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import  { useContext } from "react";
+import  LoginModal from "./LoginModal";
+import { AuthContext } from "../context/AuthContext";
 
 /* ---------------- STYLED SEARCH ---------------- */
 
@@ -55,10 +59,9 @@ export default function NavBarMUI({
   onCartClick,
   onLoginClick,
 }) {
+   const { userToken, logout } = useContext(AuthContext);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -138,7 +141,15 @@ export default function NavBarMUI({
           <IconButton color="inherit" onClick={onLoginClick}>
             <AccountCircleIcon />
           </IconButton>
-
+         {userToken ? (
+  <Button color="inherit" onClick={logout}>
+    Logout
+  </Button>
+) : (
+  <Button color="inherit" onClick={LoginModal}>
+    Login
+  </Button>
+)}
           <IconButton color="inherit" onClick={onCartClick}>
             <Badge badgeContent={cartCount} color="warning">
               <ShoppingCartIcon />
