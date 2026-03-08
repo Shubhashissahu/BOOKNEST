@@ -22,6 +22,8 @@ import Footer from "./Components/Footer";
 import HomePage from "./Pages/Home";
 import BooksPage from "./Pages/BooksPage";
 import ContactPage from "./Pages/ContactPage";
+import DashboardPage from "./Pages/DashboardPage";
+import ProfilePage from "./Pages/ProfilePage";
 
 /* =====================
    MUI THEME
@@ -99,6 +101,9 @@ function App() {
               path="/books"
               element={<BooksPage cart={cart} setCart={setCart} />}
             />
+             <Route path="/dashboard" element={<DashboardPage />} />
+             <Route path="/profile" element={<ProfilePage />} />
+
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </Box>
