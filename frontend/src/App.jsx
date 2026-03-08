@@ -17,6 +17,7 @@ import NavBarMUI from "./Components/NavBarMUI";
 import LoginModal from "./Components/LoginModal";
 import ShoppingCartSheet from "./Components/ShoppingCartSheet";
 import Footer from "./Components/Footer";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 // Pages
 import HomePage from "./Pages/Home";
@@ -101,10 +102,10 @@ function App() {
               path="/books"
               element={<BooksPage cart={cart} setCart={setCart} />}
             />
-             <Route path="/dashboard" element={<DashboardPage />} />
+             <Route path="/dashboard" element={ <ProtectedRoute><DashboardPage /></ProtectedRoute>} />
              <Route path="/profile" element={<ProfilePage />} />
 
-            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
           </Routes>
         </Box>
 
