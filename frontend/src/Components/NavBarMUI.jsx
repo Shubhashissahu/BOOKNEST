@@ -72,7 +72,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
 
   const profileMenu = [
     { label: "My Profile", path: "/profile", icon: <AccountCircleIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
-    { label: "Dashboard", path: "/dashboard", icon: <DashboardIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+    { label: "Dashboard", path: "/Dashboard", icon: <DashboardIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
     { label: "Wishlist", path: "/wishlist", icon: <FavoriteIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
     { label: "Settings", path: "/settings", icon: <SettingsIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
   ];
@@ -236,7 +236,6 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
               Login
             </Button>
           )}
-
           <IconButton
             color="inherit"
             sx={{ display:{ xs:"block", md:"none"} }}
@@ -244,7 +243,6 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
           >
             <MenuIcon/>
           </IconButton>
-
         </Box>
       </Toolbar>
 
