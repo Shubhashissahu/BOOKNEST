@@ -26,19 +26,15 @@ export default function ShoppingCartSheet({
   onUpdateQuantity,
   onRemoveItem,
 }) {
-  /* ======================
-     Price Calculations
-  ====================== */
-  const subtotal = useMemo(
-    () =>
-      cartItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      ),
-    [cartItems]
-  );
-
-  const shipping = subtotal > 0 ? 99 : 0; // ₹99 flat shipping
+//price claculation
+const subtotal = useMemo(() =>
+    cartItems.reduce(
+      (sum, item) => sum + (item.book?.price || 0) * item.quantity,
+      0
+    ),
+  [cartItems]
+);
+  const shipping = subtotal > 0 ? 45 : 0; 
   const total = subtotal + shipping;
 
   return (
@@ -87,7 +83,7 @@ export default function ShoppingCartSheet({
           <List sx={{ mt: 2 }}>
             {cartItems.map((item) => (
               <ListItem
-                key={item.id}
+                key={item._id}
                 sx={{
                   mb: 2,
                   background: "rgba(255,255,255,0.05)",
@@ -96,7 +92,7 @@ export default function ShoppingCartSheet({
               >
                 <ListItemAvatar>
                   <Avatar
-                    src={item.image}
+                    src={item.book?.image}
                     variant="rounded"
                     sx={{ width: 60, height: 80, mr: 1 }}
                     onError={(e) => {
@@ -112,21 +108,20 @@ export default function ShoppingCartSheet({
                       sx={{ fontWeight: "bold", color: "#ffa500" }}
                       noWrap
                     >
-                      {item.title}
+                      {item.book?.title}
                     </Typography>
                   }
                   secondary={
                     <>
                       <Typography variant="body2" sx={{ opacity: 0.6 }}>
-                        {item.author}
+                        {item.book?.author}
                       </Typography>
                       <Typography variant="body2" fontWeight="bold">
-                        ₹{item.price}
+                        ₹{item.book?.price}
                       </Typography>
                     </>
                   }
                 />
-
                 {/* ================= QUANTITY ================= */}
                 <Box
                   display="flex"
@@ -138,7 +133,7 @@ export default function ShoppingCartSheet({
                     size="small"
                     sx={{ color: "#ffa500" }}
                     onClick={() =>
-                      onUpdateQuantity(item.id, item.quantity + 1)
+                    onUpdateQuantity(item._id, item.quantity + 1)
                     }
                   >
                     <AddIcon />
@@ -153,7 +148,7 @@ export default function ShoppingCartSheet({
                     sx={{ color: "#ffa500" }}
                     disabled={item.quantity === 1}
                     onClick={() =>
-                      onUpdateQuantity(item.id, item.quantity - 1)
+                    onUpdateQuantity(item._id, item.quantity - 1)
                     }
                   >
                     <RemoveIcon />
@@ -163,7 +158,7 @@ export default function ShoppingCartSheet({
                 {/* ================= REMOVE ITEM ================= */}
                 <IconButton
                   onClick={() => {
-                    onRemoveItem(item.id);
+                    onRemoveItem(item._id);
                     toast.error("Item removed from cart");
                   }}
                   sx={{ color: "#ff5252" }}
