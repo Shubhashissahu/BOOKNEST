@@ -6,13 +6,52 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const BookCard = ({ book, onViewDetails, onAddToCart }) => {
+const BookCard = ({ book, onViewDetails}) => {
   // ⭐ Stable rating (does NOT change on re-render)
   const rating = useMemo(
     () => book.rating ?? Math.floor(Math.random() * 2) + 4,
     [book.rating]
   );
+//add cart
+ const addToCart = async (book) => {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    toast.error("Please login first");
+    return;
+  }
+
+  try {
+
+    await axios.post(
+      "http://localhost:5000/api/cart/add",
+      {
+        book: {
+          id: book.id || book._id,
+          title: book.title,
+          author: book.author,
+          price: book.price,
+          image: book.image
+        }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    toast.success("Added to cart");
+
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to add to cart");
+  }
+};
 
   return (
     <Card
@@ -122,7 +161,7 @@ const BookCard = ({ book, onViewDetails, onAddToCart }) => {
               borderColor: "#ffa500",
               fontWeight: 600,
             }}
-            onClick={() => onAddToCart?.(book)}
+            onClick={() => addToCart(book)}
           >
             Add to Cart
           </Button>
