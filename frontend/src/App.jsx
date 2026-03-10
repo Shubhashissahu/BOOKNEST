@@ -53,9 +53,9 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
-  const token = localStorage.getItem("token");
 //fetch cart
   const fetchCart = async () => {
+    const token = localStorage.getItem("token");
 
     if (!token) return;
 
@@ -76,6 +76,7 @@ function App() {
 
 //update quanity
   const handleUpdateQuantity = async (id, qty) => {
+     const token = localStorage.getItem("token");
     try {
       await updateCartQuantity(id, qty, token);
       fetchCart();
@@ -86,6 +87,7 @@ function App() {
   };
 //remove item
   const handleRemoveItem = async (id) => {
+    const token = localStorage.getItem("token");
     try {
       await removeFromCart(id, token);
       fetchCart();

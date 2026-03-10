@@ -96,8 +96,7 @@ const subtotal = useMemo(() =>
                     variant="rounded"
                     sx={{ width: 60, height: 80, mr: 1 }}
                     onError={(e) => {
-                      e.target.src =
-                        "https://via.placeholder.com/60x80?text=No+Cover";
+                      e.target.src = "https://placehold.co/60x80/222/ffa500?text=No+Cover";
                     }}
                   />
                 </ListItemAvatar>
