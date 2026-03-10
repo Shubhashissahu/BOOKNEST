@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import axios from "axios";
+// import axios from "axios";
 import {
   Drawer,
   Box,
@@ -19,6 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 
 export default function ShoppingCartSheet({
   isOpen,
@@ -36,23 +37,11 @@ const subtotal = useMemo(() =>
   [cartItems]
 );
   const shipping = subtotal > 0 ? 45 : 0; 
-  const total = subtotal + shipping;
-  const checkout = async () => {
+  const handlingfee = subtotal>0?15:0;
+  const total = subtotal + shipping + handlingfee;
 
-  const token = localStorage.getItem("token");
-
-  await axios.post(
-    "http://localhost:5000/api/orders",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
-
-  alert("Order placed successfully");
-};
+  //navigate
+const navigate = useNavigate();
 
   return (
     <Drawer
@@ -197,6 +186,10 @@ const subtotal = useMemo(() =>
             <Typography>Shipping</Typography>
             <Typography>₹{shipping.toFixed(2)}</Typography>
           </Box>
+           <Box display="flex" justifyContent="space-between" mb={1}>
+            <Typography>Handeling fee</Typography>
+            <Typography>₹{handlingfee.toFixed(2)}</Typography>
+          </Box>
 
           <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
 
@@ -211,7 +204,7 @@ const subtotal = useMemo(() =>
           <Button
             fullWidth
             variant="contained"
-            onClick={checkout}
+          onClick={() => { onClose(); navigate("/checkout"); }}
             sx={{
               py: 1.5,
               background: "linear-gradient(90deg,#ffa500,#ff5e00)",
