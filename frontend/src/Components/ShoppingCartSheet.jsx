@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import axios from "axios";
 import {
   Drawer,
   Box,
@@ -36,6 +37,22 @@ const subtotal = useMemo(() =>
 );
   const shipping = subtotal > 0 ? 45 : 0; 
   const total = subtotal + shipping;
+  const checkout = async () => {
+
+  const token = localStorage.getItem("token");
+
+  await axios.post(
+    "http://localhost:5000/api/orders",
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  alert("Order placed successfully");
+};
 
   return (
     <Drawer
@@ -194,6 +211,7 @@ const subtotal = useMemo(() =>
           <Button
             fullWidth
             variant="contained"
+            onClick={checkout}
             sx={{
               py: 1.5,
               background: "linear-gradient(90deg,#ffa500,#ff5e00)",
