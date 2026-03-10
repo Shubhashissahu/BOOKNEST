@@ -36,7 +36,7 @@ const BooksPage = ({ cart, setCart }) => {
       author: doc.author_name?.join(", ") || "Unknown",
       image: coverId
         ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
-        : "https://via.placeholder.com/300x450?text=No+Cover",
+        : "https://placehold.co/300x450/222/ffa500?text=No+Cover",
       price: Math.floor(Math.random() * 500) + 200,
       raw: doc,
     };
@@ -62,13 +62,12 @@ const BooksPage = ({ cart, setCart }) => {
   };
 
   /* ================= URL CATEGORY ================= */
-  useEffect(() => {
-    const category = searchParams.get("category");
-    const initialQuery = category || "harry potter";
-
-    setQuery(initialQuery);
-    fetchBooks(initialQuery, 1);
-  }, [searchParams]);
+ useEffect(() => {
+  const category = searchParams.get("category");
+  const initialQuery = category || "harry potter";
+  setQuery(initialQuery);
+  fetchBooks(initialQuery, 1);
+}, [searchParams.toString()]);
 
   /* ================= CART ================= */
   const handleAddToCart = (book) => {

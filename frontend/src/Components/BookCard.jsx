@@ -77,8 +77,7 @@ const BookCard = ({ book, onViewDetails}) => {
         src={book.image}
         alt={book.title}
         onError={(e) => {
-          e.target.src =
-            "https://via.placeholder.com/300x450?text=No+Cover";
+          e.target.src = "https://placehold.co/300x450/222/ffa500?text=No+Cover";
         }}
         sx={{
           width: "100%",
