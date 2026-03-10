@@ -5,7 +5,7 @@ import connectDB from "./config/db.js";
 import bookRoutes from "./routes/books.js";
 import authRoutes from "./routes/auth.js";
 import cartRoutes from "./routes/cart.js";
-import orderRoutes from "./routes/order.js";
+import orderRoutes from "./routes/orders.js";
 
 dotenv.config();
 connectDB();
