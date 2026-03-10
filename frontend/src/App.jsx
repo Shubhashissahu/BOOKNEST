@@ -28,10 +28,9 @@ import BooksPage from "./Pages/BooksPage";
 import ContactPage from "./Pages/ContactPage";
 import DashboardPage from "./Pages/DashboardPage";
 import ProfilePage from "./Pages/ProfilePage";
-
-/* =====================
-   MUI THEME
-===================== */
+import CheckoutPage from "./Pages/CheckoutPage";
+import OrdersPage   from "./Pages/OrdersPage";
+//mui theme
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -147,6 +146,16 @@ function App() {
               }
             />
 
+<Route path="/checkout" element={
+  <ProtectedRoute>
+    <CheckoutPage onOrderPlaced={() => setCartItems([])} /> {/* ← remove cartItems prop */}
+  </ProtectedRoute>
+} />
+<Route path="/orders" element={
+  <ProtectedRoute>
+    <OrdersPage />
+  </ProtectedRoute>
+} />
             <Route
               path="/profile"
               element={
