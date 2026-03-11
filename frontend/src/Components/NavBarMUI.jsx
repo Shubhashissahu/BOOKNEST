@@ -18,6 +18,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Shoppingbag from "@mui/icons-material/ShoppingBag";
 
 import { AuthContext } from "../context/AuthContext";
 
@@ -72,6 +73,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
 
   const profileMenu = [
     { label: "My Profile", path: "/profile", icon: <AccountCircleIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
+{ label: "My orders", path: "/orders", icon: <Shoppingbag sx={{ color:"#ffa500",fontSize:20 }}/> },
     { label: "Dashboard", path: "/Dashboard", icon: <DashboardIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
     { label: "Wishlist", path: "/wishlist", icon: <FavoriteIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
     { label: "Settings", path: "/settings", icon: <SettingsIcon sx={{ color:"#ffa500",fontSize:20 }}/> },
