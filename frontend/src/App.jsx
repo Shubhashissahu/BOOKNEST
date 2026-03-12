@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import {
@@ -21,7 +21,8 @@ import LoginModal from "./Components/LoginModal";
 import ShoppingCartSheet from "./Components/ShoppingCartSheet";
 import Footer from "./Components/Footer";
 import ProtectedRoute from "./Components/ProtectedRoute";
-
+import LiveChat from "./Components/Livechat";
+import { AuthContext } from "./context/AuthContext";
 // Pages
 import HomePage from "./Pages/Home";
 import BooksPage from "./Pages/BooksPage";
@@ -51,6 +52,7 @@ function App() {
   const [showCart, setShowCart] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const { userToken, user } = useContext(AuthContext);
 
 //fetch cart
   const fetchCart = async () => {
@@ -185,6 +187,10 @@ function App() {
         />
 
       </Router>
+      <LiveChat 
+        userToken={userToken} 
+        userName={user?.name || "User"}
+      />
     </ThemeProvider>
   );
 }
