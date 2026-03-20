@@ -176,7 +176,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
 
             <IconButton color="inherit"><DarkModeIcon /></IconButton>
 
-            {/* 🔔 NOTIFICATIONS BELL */}
+            {/*  NOTIFICATIONS BELL */}
             {userToken && (
               <Tooltip title="Notifications">
                 <IconButton
@@ -191,7 +191,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
               </Tooltip>
             )}
 
-            {/* 📖 READING PROGRESS */}
+            {/*  READING PROGRESS */}
             {userToken && (
               <Tooltip title="Currently Reading">
                 <IconButton
@@ -205,7 +205,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
               </Tooltip>
             )}
 
-            {/* 💝 WALLET/GIFT CARD */}
+            {/*  WALLET/GIFT CARD */}
             {userToken && (
               <Tooltip title="Wallet">
                 <IconButton
@@ -564,8 +564,6 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
           </Typography>
         </Box>
       </Popover>
-
-      {/* =========== LIVE CHAT WIDGET =========== */}
       
     </>
   );
