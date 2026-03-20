@@ -31,6 +31,7 @@ import DashboardPage from "./Pages/DashboardPage";
 import ProfilePage from "./Pages/ProfilePage";
 import CheckoutPage from "./Pages/CheckoutPage";
 import OrdersPage   from "./Pages/OrdersPage";
+import SettingsPage from "./Pages/SettingsPage";
 //mui theme
 const theme = createTheme({
   palette: {
@@ -158,6 +159,7 @@ function App() {
     <OrdersPage />
   </ProtectedRoute>
 } />
+<Route path="/settings" element={<SettingsPage />} />
             <Route
               path="/profile"
               element={
