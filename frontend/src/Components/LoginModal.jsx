@@ -56,6 +56,9 @@ export default function LoginModal({ show, onClose }) {
     setIsLogin(!isLogin);
     resetFields();
   };
+const handleGoogle = () => {
+    window.location.href = 'http://localhost:5000/auth/google';
+  };
 
   return (
     <Dialog
@@ -136,7 +139,33 @@ export default function LoginModal({ show, onClose }) {
             InputLabelProps={{ style: { color: "white" } }}
             InputProps={{ style: { color: "white" } }}
           />
-
+ <Button
+      variant="outlined"
+      onClick={handleGoogle}
+      startIcon={
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google"
+          width="20"
+        />
+      }
+      sx={{
+        textTransform: "none",
+        fontWeight: 500,
+         backgroundColor:"white",
+        borderRadius: "8px",
+        padding: "10px 16px",
+        borderColor: "#dadce0",
+        color: "#3c4043",
+        "&:hover": {
+          backgroundColor: "#f7f8f8",
+          borderColor: "#dadce0"
+        }
+      }}
+      fullWidth
+    >
+      Continue with Google
+    </Button>
           {/* Submit Button */}
           <Button
             type="submit"
