@@ -2,21 +2,24 @@ import jwt from "jsonwebtoken";
 
 export const protect = (req, res, next) => {
 
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized" });
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    try {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded.id;
+      return next();
+    } catch (error) {
+      return res.status(401).json({ message: "Token invalid or expired" });
+    }
   }
-  module.exports = (req, res, next) => {
-  if (req.isAuthenticated()) return next();
-  res.status(401).json({ error: 'Unauthorized. Please log in.' });
-};
 
-  try {
-    const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
-    req.user = decoded.id;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Token invalid" });
+
+  if (req.isAuthenticated()) {
+    req.user = req.user._id;
+    return next();
   }
+
+  return res.status(401).json({ message: "Not authorized. Please login." });
 };
