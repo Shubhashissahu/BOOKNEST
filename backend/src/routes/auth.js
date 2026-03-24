@@ -16,7 +16,17 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/auth/failed' }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL + '/dashboard');
+    const token = jwt.sign(
+      { 
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    // ✅ Send token to frontend via query param
+    res.redirect(`${process.env.CLIENT_URL}/oauth-callback?token=${token}`);
   }
 );
 
