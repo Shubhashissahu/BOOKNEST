@@ -32,6 +32,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import CheckoutPage from "./Pages/CheckoutPage";
 import OrdersPage   from "./Pages/OrdersPage";
 import SettingsPage from "./Pages/SettingsPage";
+import OAuthCallback from "./Pages/OAuthCallback";
 //mui theme
 const theme = createTheme({
   palette: {
@@ -148,6 +149,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/oauth-callback" element={<OAuthCallback />} />
 
 <Route path="/checkout" element={
   <ProtectedRoute>

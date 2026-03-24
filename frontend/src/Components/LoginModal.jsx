@@ -21,36 +21,34 @@ export default function LoginModal({ show, onClose }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const resetFields = () => {
     setName("");
     setEmail("");
     setPassword("");
   };
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);          // ✅ Prevent double submit
     try {
       if (isLogin) {
         const res = await loginUser({ email, password });
-         login(res.data.token);
-        alert("Login Successful");
+        login(res.data.token);
         resetFields();
         onClose();
       } else {
         await registerUser({ name, email, password });
-
-        alert("Registration Successful");
         resetFields();
         setIsLogin(true);
       }
     } catch (error) {
-      const message =
-        error?.response?.data?.message || "Something went wrong";
+      const message = error?.response?.data?.message || "Something went wrong";
       alert(message);
+    } finally {
+      setLoading(false);       // ✅ Always re-enable button
     }
-  };
+};
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
@@ -141,6 +139,7 @@ const handleGoogle = () => {
           />
  <Button
       variant="outlined"
+      type="button" 
       onClick={handleGoogle}
       startIcon={
         <img
@@ -169,6 +168,7 @@ const handleGoogle = () => {
           {/* Submit Button */}
           <Button
             type="submit"
+            disabled={loading}
             variant="contained"
             fullWidth
             sx={{
@@ -184,7 +184,7 @@ const handleGoogle = () => {
               },
             }}
           >
-            {isLogin ? "Login" : "Register"}
+             {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
           </Button>
         </Box>
 
