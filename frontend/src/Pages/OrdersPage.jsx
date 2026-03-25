@@ -1,23 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Chip, Divider } from "@mui/material";
+import {
+  Box, Typography, Chip, Divider, Button, Stack
+} from "@mui/material";
+import PaymentIcon from "@mui/icons-material/Payment";
 import { getMyOrders } from "../api/order";
+import PaymentModal from "../Components/PaymentModal";
+import ReceiptModal from "../Components/ReceiptModal";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);   // order being paid
+  const [receipt, setReceipt] = useState(null);               // receipt to show
 
-  // Fetch orders
+  // Get user from localStorage (adjust to your auth setup)
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
     getMyOrders(token)
-      .then((res) => {
-        setOrders(res.data || []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch orders:", err);
-      });
+      .then((res) => setOrders(res.data || []))
+      .catch((err) => console.error("Failed to fetch orders:", err));
   }, []);
+
+  // Called when payment succeeds — update order in local state
+  const handlePaymentSuccess = (receiptData, paidOrderId) => {
+    setOrders(prev =>
+      prev.map(o =>
+        o._id === paidOrderId
+          ? { ...o, paymentStatus: 'PAID', orderStatus: 'Processing' }
+          : o
+      )
+    );
+    setReceipt(receiptData);
+  };
 
   const statusColor = (status) => {
     if (status === "Processing") return "warning";
@@ -25,13 +41,12 @@ export default function OrdersPage() {
     return "default";
   };
 
+  const paymentColor = (status) =>
+    status === 'PAID' ? 'success' : 'error';
+
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", p: 3, color: "#fff" }}>
-      <Typography
-        variant="h3"
-        fontWeight="bold"
-        sx={{ color: "#ffa500", mb: 3 }}
-      >
+      <Typography variant="h3" fontWeight="bold" sx={{ color: "#ffa500", mb: 3 }}>
         My Orders
       </Typography>
 
@@ -45,32 +60,35 @@ export default function OrdersPage() {
           sx={{ background: "#1a1a1a", borderRadius: 2, p: 2, mb: 3 }}
         >
           {/* Order Header */}
-          <Box display="flex" justifyContent="space-between" mb={1}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
             <Typography variant="body2" sx={{ opacity: 0.6 }}>
               {new Date(order.createdAt).toLocaleDateString()}
             </Typography>
-
-            <Chip
-              label={order.orderStatus}
-              color={statusColor(order.orderStatus)}
-              size="small"
-            />
+            <Stack direction="row" spacing={1}>
+              {/* Payment Status Badge */}
+              <Chip
+                label={order.paymentStatus || 'PENDING'}
+                color={paymentColor(order.paymentStatus)}
+                size="small"
+                variant="outlined"
+              />
+              {/* Order Status Badge */}
+              <Chip
+                label={order.orderStatus}
+                color={statusColor(order.orderStatus)}
+                size="small"
+              />
+            </Stack>
           </Box>
 
           <Divider sx={{ borderColor: "#333", mb: 1 }} />
 
           {/* Order Items */}
           {order.items?.map((item, i) => (
-            <Box
-              key={i}
-              display="flex"
-              justifyContent="space-between"
-              mb={0.5}
-            >
+            <Box key={i} display="flex" justifyContent="space-between" mb={0.5}>
               <Typography>
                 {item.title || "Book"} x{item.quantity}
               </Typography>
-
               <Typography>
                 ₹{((item.price || 0) * (item.quantity || 0)).toFixed(2)}
               </Typography>
@@ -79,16 +97,54 @@ export default function OrdersPage() {
 
           <Divider sx={{ borderColor: "#333", my: 1 }} />
 
-          {/* Total */}
-          <Box display="flex" justifyContent="space-between">
-            <Typography fontWeight="bold">Total</Typography>
+          {/* Total + Pay Now Button */}
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Stack>
+              <Typography fontWeight="bold">Total</Typography>
+              <Typography fontWeight="bold" sx={{ color: "#ffa500" }}>
+                ₹{order.totalAmount?.toFixed(2)}
+              </Typography>
+            </Stack>
 
-            <Typography fontWeight="bold" sx={{ color: "#ffa500" }}>
-              ₹{order.totalAmount?.toFixed(2)}
-            </Typography>
+            {/* ✅ Show Pay Now only if NOT already paid */}
+            {order.paymentStatus !== 'PAID' && (
+              <Button
+                variant="contained"
+                color="warning"
+                startIcon={<PaymentIcon />}
+                onClick={() => setSelectedOrder(order)}
+                sx={{ fontWeight: 700 }}
+              >
+                Pay Now
+              </Button>
+            )}
+
+            {/* ✅ Show transaction ID if already paid */}
+            {order.paymentStatus === 'PAID' && order.transactionId && (
+              <Typography variant="caption" sx={{ color: '#aaa' }}>
+                TXN: {order.transactionId}
+              </Typography>
+            )}
           </Box>
         </Box>
       ))}
+
+      {/* Payment Modal */}
+      <PaymentModal
+        open={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        order={selectedOrder}
+        user={user}
+        onSuccess={handlePaymentSuccess}
+      />
+
+      {/* Receipt Modal after successful payment */}
+      {receipt && (
+        <ReceiptModal
+          receipt={receipt}
+          onClose={() => setReceipt(null)}
+        />
+      )}
     </Box>
   );
 }

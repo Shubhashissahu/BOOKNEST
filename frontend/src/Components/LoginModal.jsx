@@ -28,27 +28,33 @@ export default function LoginModal({ show, onClose }) {
     setEmail("");
     setPassword("");
   };
-const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);          // ✅ Prevent double submit
+    setLoading(true);
+
     try {
       if (isLogin) {
         const res = await loginUser({ email, password });
+
         login(res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
         resetFields();
         onClose();
       } else {
         await registerUser({ name, email, password });
+
         resetFields();
         setIsLogin(true);
       }
     } catch (error) {
-      const message = error?.response?.data?.message || "Something went wrong";
+      const message =
+        error?.response?.data?.message || "Something went wrong";
       alert(message);
     } finally {
-      setLoading(false);       // ✅ Always re-enable button
+      setLoading(false);
     }
-};
+  };
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
