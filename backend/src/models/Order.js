@@ -22,7 +22,15 @@ const orderSchema = new mongoose.Schema({
     pincode: String,
   },
   paymentMethod: { type: String, default: "COD" }, 
-  paymentStatus: { type: String, default: "Pending" },
+ paymentStatus: {
+  type: String,
+  enum: ['PENDING', 'PAID'],
+  default: 'PENDING',
+},
+transactionId: {
+  type: String,
+  default: null,
+},
   orderStatus:   { type: String, default: "Processing" },
 }, { timestamps: true });
 
