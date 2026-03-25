@@ -77,7 +77,7 @@ const handlePay = async () => {
       <DialogContent>
 
         {/* Order Summary */}
-        <Box sx={{ bgcolor: '#f5f5f5', borderRadius: 2, p: 2, mb: 3 }}>
+        <Box sx={{ bgcolor: '#1a1a1a', borderRadius: 2, p: 2, mb: 3 }}>
           <Typography variant="body2" color="text.secondary" mb={1} fontWeight={600}>
             Order Summary
           </Typography>
@@ -113,7 +113,7 @@ const handlePay = async () => {
         </Box>
 
         {/* Delivering To */}
-        <Box sx={{ bgcolor: '#f9f9f9', borderRadius: 2, p: 2, mb: 3 }}>
+        <Box sx={{ bgcolor: '#1111118d', borderRadius: 2, p: 2, mb: 3 }}>
           <Typography variant="body2" color="text.secondary" fontWeight={600} mb={0.5}>
             Delivering To
           </Typography>
