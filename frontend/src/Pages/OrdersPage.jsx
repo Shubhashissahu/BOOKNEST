@@ -132,8 +132,8 @@ export default function OrdersPage() {
   orderData={{                 // ← build orderData shape PaymentModal needs
     items: selectedOrder?.items || [],
     total: selectedOrder?.totalAmount,
-    shipping: 0,               // already paid shipping at checkout
-    handlingFee: 0,
+    shipping: 45,               // already paid shipping at checkout
+    handlingFee: 15,
     address: selectedOrder?.address,
   }}
   onSuccess={(receiptData) => handlePaymentSuccess(receiptData, selectedOrder?._id)}
