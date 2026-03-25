@@ -11,10 +11,6 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);   // order being paid
   const [receipt, setReceipt] = useState(null);               // receipt to show
-
-  // Get user from localStorage (adjust to your auth setup)
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -131,12 +127,17 @@ export default function OrdersPage() {
 
       {/* Payment Modal */}
       <PaymentModal
-        open={!!selectedOrder}
-        onClose={() => setSelectedOrder(null)}
-        order={selectedOrder}
-        user={user}
-        onSuccess={handlePaymentSuccess}
-      />
+  open={!!selectedOrder}
+  onClose={() => setSelectedOrder(null)}
+  orderData={{                 // ← build orderData shape PaymentModal needs
+    items: selectedOrder?.items || [],
+    total: selectedOrder?.totalAmount,
+    shipping: 0,               // already paid shipping at checkout
+    handlingFee: 0,
+    address: selectedOrder?.address,
+  }}
+  onSuccess={(receiptData) => handlePaymentSuccess(receiptData, selectedOrder?._id)}
+/>
 
       {/* Receipt Modal after successful payment */}
       {receipt && (
