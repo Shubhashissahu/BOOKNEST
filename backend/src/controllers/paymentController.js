@@ -64,10 +64,11 @@ export const processPayment = async (req, res) => {
 
     // 3. Send email (non-blocking)
     if (sendEmail) {
+      console.log(' Sending email to:', email);
       try {
         await sendReceiptEmail(transaction);
       } catch (emailError) {
-        console.error('📧 Email failed:', emailError.message);
+        console.error('Email failed:', emailError.message);
       }
     }
 
