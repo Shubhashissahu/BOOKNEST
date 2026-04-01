@@ -1,7 +1,9 @@
+//backend/routes/auth.js
 import express from "express";
-import passport from "passport"; // ✅ Change require() to import!
+import passport from "passport"; 
 import { registerUser, loginUser } from "../controllers/authController.js";
-
+import jwt from "jsonwebtoken"; 
+import { protect } from "../middleware/auth.js";
 const router = express.Router();
 
 // ─── Existing JWT Auth ─────────────────────────────────────
@@ -31,11 +33,9 @@ router.get('/google/callback',
 );
 
 // ─── Get Current User ──────────────────────────────────────
-router.get('/me', (req, res) => {
-  if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-  res.json({ user: req.user });
+router.get('/me', protect, (req, res) => {
+  res.json({ user: req.user }); 
 });
-
 // ─── Logout ────────────────────────────────────────────────
 router.get('/logout', (req, res) => {
   req.logout((err) => {

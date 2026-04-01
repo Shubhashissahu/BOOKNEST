@@ -22,6 +22,8 @@ export default function LoginModal({ show, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const resetFields = () => {
     setName("");
@@ -30,38 +32,39 @@ export default function LoginModal({ show, onClose }) {
   };
  const handleSubmit = async (e) => {
     e.preventDefault();
+     setError(""); 
     setLoading(true);
 
     try {
       if (isLogin) {
         const res = await loginUser({ email, password });
 
-        login(res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+login(res.data.token, res.data.user);
 
         resetFields();
         onClose();
       } else {
         await registerUser({ name, email, password });
-
+        setSuccess("Account created! Please log in.");
+setIsLogin(true);
+        setError("");
         resetFields();
         setIsLogin(true);
       }
-    } catch (error) {
-      const message =
-        error?.response?.data?.message || "Something went wrong";
-      alert(message);
+    } catch (err) {
+  setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
     resetFields();
   };
 const handleGoogle = () => {
-    window.location.href = 'http://localhost:5000/auth/google';
+    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`;
   };
 
   return (
@@ -155,6 +158,7 @@ const handleGoogle = () => {
         />
       }
       sx={{
+         mt: 2,
         textTransform: "none",
         fontWeight: 500,
          backgroundColor:"white",
@@ -171,6 +175,16 @@ const handleGoogle = () => {
     >
       Continue with Google
     </Button>
+    {error && (
+  <Typography sx={{ color: "#ff5e00", fontSize: "0.85rem", mt: 1 }}>
+    {error}
+  </Typography>
+)}
+{success && (
+  <Typography sx={{ color: "#4caf50", fontSize: "0.85rem", mt: 1 }}>
+    {success}
+  </Typography>
+)}
           {/* Submit Button */}
           <Button
             type="submit"
