@@ -1,59 +1,61 @@
-import { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // npm install jwt-decode
+// frontend/src/context/AuthContext.jsx
+import { createContext, useState, useEffect, useContext } from "react";
+import { saveAuth, getStoredUser, clearAuth, getToken } from "../utils/auth";
 
 export const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
+export const useAuth = () => useContext(AuthContext);
 
-  const [userToken, setUserToken] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Prevents flicker on refresh
+export default function AuthProvider({ children }) {
+  const [user, setUser]       = useState(() => getStoredUser());
+  const [token, setToken]     = useState(() => getToken());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
+    const storedToken = getToken();
 
-        // ✅ Check if token is expired
-        if (decoded.exp * 1000 > Date.now()) {
-          setUserToken(token);
-          setUser(decoded);
-        } else {
-          // ✅ Token expired — clean it up automatically
-          localStorage.removeItem("token");
-        }
-
-      } catch (err) {
-        // ✅ Corrupt/tampered token — wipe it
-        localStorage.removeItem("token");
-      }
+    if (!storedToken) {
+      setLoading(false);
+      return;
     }
-    setLoading(false); // ✅ Done checking
+
+    fetch("/api/auth/me", {
+      headers: { Authorization: `Bearer ${storedToken}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Token invalid");
+        return res.json();
+      })
+      .then(({ user }) => {
+        saveAuth(storedToken, user);
+        setUser(user);
+        setToken(storedToken);   // ✅ Sync token state on mount
+      })
+      .catch(() => {
+        clearAuth();
+        setUser(null);
+        setToken(null);          // ✅ Clear token state on failure
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  const login = (token) => {
-    try {
-      const decoded = jwtDecode(token);
-      localStorage.setItem("token", token);
-      setUserToken(token);
-      setUser(decoded); // ✅ User data now available everywhere
-    } catch (err) {
-      console.error("Invalid token received:", err);
-    }
+  const login = (token, user) => {
+    saveAuth(token, user);
+    setToken(token);             // ✅ Token state updated
+    setUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUserToken(null);
-    setUser(null); // ✅ Full clean slate
+    clearAuth();
+    setToken(null);              // ✅ Token state cleared
+    setUser(null);
   };
 
-  // ✅ Don't render children until auth state is resolved
   if (loading) return null;
 
   return (
-    <AuthContext.Provider value={{ userToken, user, login, logout }}>
+    // ✅ token now exposed — fixes NavBar's userToken → use token instead
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

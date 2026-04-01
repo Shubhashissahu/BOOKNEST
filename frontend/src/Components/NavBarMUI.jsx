@@ -59,13 +59,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) {
 
-  const { userToken, user, logout } = useContext(AuthContext);
+ const { token, user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
   const [notificationsAnchor, setNotificationsAnchor] = useState(null);
-  const [wallletAnchor, setWalletAnchor] = useState(null);
+  const [walletAnchor, setWalletAnchor] = useState(null);
   const [readingAnchor, setReadingAnchor] = useState(null);
  
   const [scrolled, setScrolled] = useState(false);
@@ -177,7 +177,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
             <IconButton color="inherit"><DarkModeIcon /></IconButton>
 
             {/*  NOTIFICATIONS BELL */}
-            {userToken && (
+            {token && (
               <Tooltip title="Notifications">
                 <IconButton
                   color="inherit"
@@ -192,7 +192,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
             )}
 
             {/*  READING PROGRESS */}
-            {userToken && (
+            {token && (
               <Tooltip title="Currently Reading">
                 <IconButton
                   color="inherit"
@@ -206,7 +206,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
             )}
 
             {/*  WALLET/GIFT CARD */}
-            {userToken && (
+            {token && (
               <Tooltip title="Wallet">
                 <IconButton
                   color="inherit"
@@ -226,7 +226,7 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
               </Badge>
             </IconButton>
 
-            {userToken ? (
+            {token ? (
               <>
                 {/* PROFILE BUTTON */}
                 <Tooltip title="Account">
@@ -492,8 +492,8 @@ export default function NavBarMUI({ cartCount = 0, onCartClick, onLoginClick }) 
 
       {/* =========== WALLET POPOVER =========== */}
       <Popover
-        anchorEl={wallletAnchor}
-        open={Boolean(wallletAnchor)}
+        anchorEl={walletAnchor}
+        open={Boolean(walletAnchor)}
         onClose={() => setWalletAnchor(null)}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
