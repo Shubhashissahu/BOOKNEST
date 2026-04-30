@@ -1,3 +1,4 @@
+//backend/src/model/transaction.js
 import mongoose from 'mongoose';
 
 const transactionSchema = new mongoose.Schema({

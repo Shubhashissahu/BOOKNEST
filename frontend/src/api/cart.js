@@ -1,37 +1,34 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/cart";
+// ✅ FIX #1 — env variable, never hardcoded
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const cartAPI = axios.create({
+  baseURL: `${BASE}/api/cart`,
+});
+
+// ✅ Attach token via interceptor — no need to pass token to every function
+const authHeaders = (token) => ({
+  headers: { Authorization: `Bearer ${token}` },
+});
 
 // GET CART
 export const getCart = (token) =>
-  axios.get(API, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  cartAPI.get("/", authHeaders(token));
 
 // ADD TO CART
 export const addToCart = (bookId, token) =>
-  axios.post(
-    `${API}/add`,
-    { bookId },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+  cartAPI.post("/add", { bookId }, authHeaders(token));
 
 // UPDATE QUANTITY
 export const updateCartQuantity = (cartId, quantity, token) =>
-  axios.put(
-    `${API}/${cartId}`,
-    { quantity },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+  cartAPI.put(`/${cartId}`, { quantity }, authHeaders(token));
 
 // REMOVE ITEM
 export const removeFromCart = (cartId, token) =>
-  axios.delete(`${API}/${cartId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  cartAPI.delete(`/${cartId}`, authHeaders(token));
 
-// ✅ CLEAR ENTIRE CART (call after successful payment)
+// ✅ FIX #2 — distinct endpoint to avoid /:cartId conflict
+// src/api/cart.js
 export const clearCart = (token) =>
-  axios.delete(`${API}/clear`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  cartAPI.delete("/clear", authHeaders(token)); 

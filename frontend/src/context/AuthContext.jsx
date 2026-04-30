@@ -1,9 +1,10 @@
-// frontend/src/context/AuthContext.jsx
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useCallback } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import { saveAuth, getStoredUser, clearAuth, getToken } from "../utils/auth";
 
-export const AuthContext = createContext();
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+export const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }) {
@@ -19,7 +20,9 @@ export default function AuthProvider({ children }) {
       return;
     }
 
-    fetch("/api/auth/me", {
+    let cancelled = false; // ✅ Prevent state update if unmounted
+
+    fetch(`${BASE}/api/auth/me`, {
       headers: { Authorization: `Bearer ${storedToken}` },
     })
       .then((res) => {
@@ -27,34 +30,51 @@ export default function AuthProvider({ children }) {
         return res.json();
       })
       .then(({ user }) => {
+        if (cancelled) return; // ✅ Guard against stale updates
         saveAuth(storedToken, user);
         setUser(user);
-        setToken(storedToken);   // ✅ Sync token state on mount
+        setToken(storedToken);
       })
       .catch(() => {
+        if (cancelled) return;
         clearAuth();
         setUser(null);
-        setToken(null);          // ✅ Clear token state on failure
+        setToken(null);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; }; // ✅ Cleanup on unmount
+
+  }, []); // ✅ Empty array — runs ONCE on mount only
+
+  // ✅ useCallback — stable function references, won't trigger child useEffects
+  const login = useCallback((newToken, newUser) => {
+    saveAuth(newToken, newUser);
+    setToken(newToken);
+    setUser(newUser);
   }, []);
 
-  const login = (token, user) => {
-    saveAuth(token, user);
-    setToken(token);             // ✅ Token state updated
-    setUser(user);
-  };
-
-  const logout = () => {
+  const logout = useCallback(() => {
     clearAuth();
-    setToken(null);              // ✅ Token state cleared
+    setToken(null);
     setUser(null);
-  };
+  }, []);
 
-  if (loading) return null;
+  if (loading) return (
+    <Box sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+      background: "#0b0b0b"
+    }}>
+      <CircularProgress sx={{ color: "#ffa500" }} />
+    </Box>
+  );
 
   return (
-    // ✅ token now exposed — fixes NavBar's userToken → use token instead
     <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>

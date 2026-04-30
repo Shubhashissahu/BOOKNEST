@@ -1,68 +1,84 @@
 //controller/authcontroller.js
-import User from "../models/User.js"
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export const registerUser = async (req,res)=>{
-    try{
+const SALT_ROUNDS = 10; // FIX #8
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        const {name,email,password} = req.body
+export const registerUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-        const userExists = await User.findOne({email})
+   
+    if (!name?.trim() || !email?.trim() || !password)
+      return res.status(400).json({ message: "All fields are required" });
 
-        if(userExists){
-            return res.status(400).json({message:"User already exists"})
-        }
+    if (!EMAIL_REGEX.test(email))
+      return res.status(400).json({ message: "Invalid email format" });
 
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password,salt)
+    if (password.length < 6)
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
 
-        const user = await User.create({
-            name,
-            email,
-            password:hashedPassword
-        })
+    const userExists = await User.findOne({ email: email.toLowerCase() });
+    if (userExists)
+      return res.status(400).json({ message: "User already exists" });
 
-        res.status(201).json({
-            message:"User registered successfully",
-            user
-        })
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    }catch(error){
-        res.status(500).json({message:error.message})
-    }
-}
+    const user = await User.create({
+      name:     name.trim(),
+      email:    email.toLowerCase().trim(),
+      password: hashedPassword,
+    });
 
-export const loginUser = async (req,res)=>{
-    try{
+    //  FIX #1 — never send password in response
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        _id:   user._id,
+        name:  user.name,
+        email: user.email,
+      },
+    });
 
-        const {email,password} = req.body
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-        const user = await User.findOne({email})
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        if(!user){
-            return res.status(400).json({message:"Invalid credentials"})
-        }
+    // ✅ FIX #3 — validate inputs
+    if (!email?.trim() || !password)
+      return res.status(400).json({ message: "Email and password are required" });
 
-        const isMatch = await bcrypt.compare(password,user.password)
+    const user = await User.findOne({ email: email.toLowerCase() });
 
-        if(!isMatch){
-            return res.status(400).json({message:"Invalid credentials"})
-        }
+    if (!user)
+      return res.status(400).json({ message: "Invalid credentials" });
 
-        const token = jwt.sign(
-            {id:user._id},
-            process.env.JWT_SECRET,
-            {expiresIn:"7d"}
-        )
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
-        res.json({
-            message:"Login successful",
-            token,
-            user
-        })
+    // ✅ FIX #6 — issuer added to JWT
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d", issuer: "booknest-api" }
+    );
+    const { password: _, ...safeUser } = user.toObject();
 
-    }catch(error){
-        res.status(500).json({message:error.message})
-    }
-}
+    res.json({
+      message: "Login successful",
+      token,
+      user: safeUser,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
