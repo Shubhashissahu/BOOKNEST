@@ -1,52 +1,56 @@
 //backend/routes/auth.js
-import express from "express";
-import passport from "passport"; 
+import express  from "express";
+import passport from "passport";
+import jwt      from "jsonwebtoken";
 import { registerUser, loginUser } from "../controllers/authController.js";
-import jwt from "jsonwebtoken"; 
 import { protect } from "../middleware/auth.js";
+
 const router = express.Router();
 
-// ─── Existing JWT Auth ─────────────────────────────────────
+// ── JWT Auth ────────────────────────────────────────────────
 router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/login",    loginUser);
 
-// ─── Google OAuth ──────────────────────────────────────────
-router.get('/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+// ── Google OAuth ────────────────────────────────────────────
+router.get("/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: true,  // ✅ FIX #4 — CSRF protection
+  })
 );
 
-router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/auth/failed' }),
+router.get("/google/callback",
+  passport.authenticate("google", { failureRedirect: "/api/auth/failed" }),
   (req, res) => {
+    // ✅ FIX #3 — consistent JWT payload (id only)
     const token = jwt.sign(
-      { 
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email 
-      },
+      { id: req.user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d", issuer: "booknest-api" }
     );
-    // ✅ Send token to frontend via query param
-    res.redirect(`${process.env.CLIENT_URL}/oauth-callback?token=${token}`);
+
+    // ✅ FIX #1 — use fragment (#) not query (?) to keep token out of logs
+    res.redirect(`${process.env.CLIENT_URL}/oauth-callback#token=${token}`);
   }
 );
 
-// ─── Get Current User ──────────────────────────────────────
-router.get('/me', protect, (req, res) => {
-  res.json({ user: req.user }); 
-});
-// ─── Logout ────────────────────────────────────────────────
-router.get('/logout', (req, res) => {
-  req.logout((err) => {
-    if (err) return res.status(500).json({ error: 'Logout failed' });
-    res.redirect(process.env.CLIENT_URL);
-  });
+// ── Get Current User ────────────────────────────────────────
+router.get("/me", protect, (req, res) => {
+  // ✅ FIX #2 — strip password before sending
+  const { password, ...safeUser } = req.user.toObject
+    ? req.user.toObject()
+    : req.user;
+  res.json({ user: safeUser });
 });
 
-// ─── Failure Route ─────────────────────────────────────────
-router.get('/failed', (req, res) => {
-  res.status(401).json({ error: 'Authentication failed' });
+// ✅ FIX #5 — POST logout, stateless JWT acknowledgment
+router.post("/logout", protect, (req, res) => {
+  res.json({ message: "Logged out successfully" });
+});
+
+// ── Failure Route ───────────────────────────────────────────
+router.get("/failed", (req, res) => {
+  res.status(401).json({ error: "Authentication failed" });
 });
 
 export default router;
