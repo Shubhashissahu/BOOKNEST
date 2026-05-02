@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Grid,
   Typography,
@@ -6,196 +6,325 @@ import {
   TextField,
   Button,
   CircularProgress,
+  Skeleton,
+  Alert,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { toast } from "react-toastify";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import BookCard from "../Components/BookCard";
 import BookDetailModal from "../Components/BookDetailModal";
-import openLibraryApi from "../Services/openLibrary";
 
-const BooksPage = ({ cart, setCart }) => {
-  /* ================= HOOKS ================= */
+import {
+  searchBooks,
+  fetchTrending,
+  getReadUrl,
+} from "../Services/openLibrary";
+
+// ─────────────────────────────────────────────
+const BookSkeleton = () => (
+  <Box sx={{ borderRadius: 2, overflow: "hidden" }}>
+    <Skeleton variant="rectangular" height={280} />
+    <Box sx={{ p: 1 }}>
+      <Skeleton width="80%" />
+      <Skeleton width="60%" />
+    </Box>
+  </Box>
+);
+
+// ─────────────────────────────────────────────
+export default function BooksPage({ addToCart }) {
   const [searchParams] = useSearchParams();
 
-  const [query, setQuery] = useState("harry potter");
+  const [query, setQuery] = useState("");
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [page, setPage] = useState(1);
+  const [totalFound, setTotalFound] = useState(0);
+
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
   const [selectedBook, setSelectedBook] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  /* ================= NORMALIZE ================= */
-  const normalizeBook = (doc) => {
-    const coverId = doc.cover_i;
-
-    return {
-      id: doc.key?.replace("/works/", ""),
-      title: doc.title || "Untitled",
-      author: doc.author_name?.join(", ") || "Unknown",
-      image: coverId
-        ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
-        : "https://placehold.co/300x450/222/ffa500?text=No+Cover",
-      price: Math.floor(Math.random() * 500) + 200,
-      raw: doc,
-    };
-  };
-
-  /* ================= FETCH ================= */
-  const fetchBooks = async (searchQuery, newPage = 1) => {
-    if (!searchQuery.trim()) return;
-
+  // ─────────────────────────────────────────────
+  // TRENDING
+  // ─────────────────────────────────────────────
+  const loadTrending = useCallback(async () => {
     setLoading(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setError(null);
+    setIsSearchMode(false);
 
     try {
-      const data = await openLibraryApi.searchBooks(searchQuery, newPage);
-      setBooks((data.docs || []).map(normalizeBook));
-      setPage(newPage);
-    } catch (error) {
-      console.error("Open Library Error:", error);
+      const data = await fetchTrending("weekly", 12);
+      setBooks(data);
+
+      // Optional success (subtle)
+      // toast.info("Showing trending books 🔥");
+
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load trending books.");
+      toast.error("Failed to load trending books");
       setBooks([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  /* ================= URL CATEGORY ================= */
- useEffect(() => {
-  const category = searchParams.get("category");
-  const initialQuery = category || "harry potter";
-  setQuery(initialQuery);
-  fetchBooks(initialQuery, 1);
-}, [searchParams.toString()]);
+  // ─────────────────────────────────────────────
+  // SEARCH
+  // ─────────────────────────────────────────────
+  const fetchBooks = useCallback(async (searchQuery, newPage = 1) => {
+    if (!searchQuery.trim()) {
+      toast.warn("Please enter a search term");
+      return;
+    }
 
-  /* ================= CART ================= */
-  const handleAddToCart = (book) => {
-    const exists = cart.find((item) => item.id === book.id);
+    setLoading(true);
+    setError(null);
+    setIsSearchMode(true);
 
-    if (exists) {
-      setCart((prev) =>
-        prev.map((item) =>
-          item.id === book.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-      toast.info("Item quantity updated");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    try {
+      const result = await searchBooks(searchQuery, newPage, 12);
+
+      setBooks(result.docs);
+      setPage(result.page);
+      setTotalFound(result.totalFound);
+
+      if (newPage === 1) {
+        toast.success(`Results for "${searchQuery}"`);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setError("Search failed. Try again.");
+      toast.error("Search failed");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ─────────────────────────────────────────────
+  // INIT
+  // ─────────────────────────────────────────────
+  useEffect(() => {
+    const q = searchParams.get("q");
+
+    if (q) {
+      setQuery(q);
+      fetchBooks(q, 1);
     } else {
-      setCart((prev) => [...prev, { ...book, quantity: 1 }]);
-      toast.success("Added to cart successfully");
+      loadTrending();
+    }
+  }, [searchParams, fetchBooks, loadTrending]);
+
+  // ─────────────────────────────────────────────
+  // VIEW DETAILS
+  // ─────────────────────────────────────────────
+  const handleViewDetails = async (book) => {
+    setSelectedBook(book);
+    setModalOpen(true);
+
+    try {
+      const readUrl = await getReadUrl(book.title || "", book.author || "");
+
+      setSelectedBook((prev) => ({
+        ...prev,
+        readUrl,
+      }));
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load book preview");
     }
   };
 
-  /* ================= UI ================= */
+  // ─────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────
+  const renderContent = () => {
+    if (loading) {
+      return Array.from({ length: 12 }).map((_, i) => (
+        <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+          <BookSkeleton />
+        </Grid>
+      ));
+    }
+
+    if (error) {
+      return (
+        <Grid item xs={12}>
+          <Alert
+            severity="error"
+            action={
+              <Button
+                startIcon={<RefreshIcon />}
+                onClick={() =>
+                  isSearchMode
+                    ? fetchBooks(query, page)
+                    : loadTrending()
+                }
+              >
+                Retry
+              </Button>
+            }
+          >
+            {error}
+          </Alert>
+        </Grid>
+      );
+    }
+
+    if (books.length === 0) {
+      return (
+        <Grid item xs={12}>
+          <Typography align="center">
+            No books found.
+          </Typography>
+        </Grid>
+      );
+    }
+
+    return books.map((book) => (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
+        <BookCard
+          book={book}
+          onAddToCart={() => addToCart(book)}
+          onViewDetails={() => handleViewDetails(book)}
+        />
+      </Grid>
+    ));
+  };
+
+  // ─────────────────────────────────────────────
+  // JSX
+  // ─────────────────────────────────────────────
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        pt: 2,
-        pb: 4,
-        px: 2,
-        background:
-          "linear-gradient(180deg, rgba(0,0,0,0.95), rgba(20,20,20,0.95))",
-      }}
-    >
-      <Box sx={{ maxWidth: "1300px", mx: "auto" }}>
-        {/* HEADER */}
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: "bold",
-            color: "#ffa500",
-            textAlign: "center",
-            mb: 2,
-          }}
-        >
-          Browse Books
+    <Box sx={{ minHeight: "100vh", px: 2, py: 3 }}>
+      <Box sx={{ maxWidth: 1300, mx: "auto" }}>
+
+        <Typography variant="h4" sx={{ textAlign: "center", mb: 2 }}>
+          {isSearchMode ? "Search Results" : "🔥 Trending Books"}
         </Typography>
 
+        {isSearchMode && !loading && totalFound > 0 && (
+          <Typography sx={{ textAlign: "center", mb: 2, opacity: 0.6 }}>
+            {totalFound.toLocaleString()} results for "{query}"
+          </Typography>
+        )}
+
         {/* SEARCH */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 2,
-            mb: 3,
-          }}
-        >
-          <TextField
-            size="small"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && fetchBooks(query, 1)}
-            placeholder="Search books..."
-            InputProps={{
-              startAdornment: (
-                <SearchIcon sx={{ color: "#ffa500", mr: 1 }} />
-              ),
-            }}
-            sx={{ width: 260, backgroundColor: "#111", borderRadius: 1 }}
-          />
+  <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    gap: 1.5,
+    mb: 3,
+    flexWrap: "wrap",
+  }}
+>
+  {/* SEARCH INPUT */}
+  <TextField
+    size="small"
+    value={query}
+    onChange={(e) => setQuery(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") fetchBooks(query, 1);
+    }}
+    placeholder="Search books, authors, topics..."
+    InputProps={{
+      startAdornment: (
+        <SearchIcon sx={{ color: "#ffa500", mr: 1 }} />
+      ),
+      sx: {
+        color: "white",
+        borderRadius: 2,
+        backgroundColor: "rgba(255,255,255,0.06)",
+        backdropFilter: "blur(6px)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        transition: "0.2s",
 
-          <Button
-            variant="contained"
-            color="warning"
-            disabled={loading}
-            onClick={() => fetchBooks(query, 1)}
-          >
-            {loading ? <CircularProgress size={20} /> : "Search"}
-          </Button>
-        </Box>
+        "& input": {
+          color: "white",
+        },
 
-        {/* GRID */}
-        <Grid container spacing={3} alignItems="stretch">
-          {books.map((book) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
-              <BookCard
-                book={book}
-                onViewDetails={() => {
-                  setSelectedBook(book);
-                  setModalOpen(true);
-                }}
-                onAddToCart={() => handleAddToCart(book)}
-              />
-            </Grid>
-          ))}
+        "&:hover": {
+          border: "1px solid rgba(255,165,0,0.4)",
+        },
+
+        "&.Mui-focused": {
+          border: "1px solid #ffa500",
+          boxShadow: "0 0 0 2px rgba(255,165,0,0.2)",
+        },
+      },
+    }}
+  />
+
+  {/* SEARCH BUTTON */}
+  <Button
+    variant="contained"
+    onClick={() => fetchBooks(query, 1)}
+    disabled={loading}
+    sx={{
+      px: 3,
+      borderRadius: 2,
+      fontWeight: 600,
+      textTransform: "none",
+      background: "linear-gradient(135deg, #ff9800, #ffb300)",
+
+      "&:hover": {
+        background: "linear-gradient(135deg, #ffa726, #ffc107)",
+      },
+    }}
+  >
+    {loading ? (
+      <CircularProgress size={18} sx={{ color: "black" }} />
+    ) : (
+      "Search"
+    )}
+  </Button>
+</Box>
+
+        <Grid container spacing={3}>
+          {renderContent()}
         </Grid>
 
         {/* PAGINATION */}
-        {books.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
+        {isSearchMode && !loading && books.length > 0 && (
+          <Box sx={{ textAlign: "center", mt: 4 }}>
             <Button
-              disabled={page === 1 || loading}
+              disabled={page === 1}
               onClick={() => fetchBooks(query, page - 1)}
             >
               Prev
             </Button>
 
-            <Typography sx={{ color: "#ffa500", fontWeight: 600 }}>
+            <Typography sx={{ display: "inline", mx: 2 }}>
               Page {page}
             </Typography>
 
-            <Button
-              disabled={loading}
-              onClick={() => fetchBooks(query, page + 1)}
-            >
+            <Button onClick={() => fetchBooks(query, page + 1)}>
               Next
             </Button>
           </Box>
         )}
-
-        {/* MODAL */}
-        <BookDetailModal
-          open={modalOpen}
-          book={selectedBook}
-          onClose={() => setModalOpen(false)}
-          onAddToCart={handleAddToCart}
-        />
       </Box>
+
+      <BookDetailModal
+        open={modalOpen}
+        book={selectedBook}
+        onClose={() => setModalOpen(false)}
+        onAddToCart={addToCart}
+      />
     </Box>
   );
-};
-
-export default BooksPage;
+}
