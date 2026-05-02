@@ -1,132 +1,236 @@
-import React, { useState, useRef } from "react";
-import { Box, Grid, Typography, Button } from "@mui/material";
-import { toast } from "react-toastify";
+//src/pages/home.jsx
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Box, Grid, Typography, Button, Skeleton, Alert } from "@mui/material";
 
 import HeroSection from "../Components/HeroSection";
 import CategorySection from "../Components/CategorySection";
 import BookCard from "../Components/BookCard";
-import ContactPage from "./ContactPage";
-import { books } from "../data/booksData";
+import BookDetailModal from "../Components/BookDetailModal";
 
-export default function Home({ cart, setCart }) {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+import {
+  fetchTrending,
+  fetchBySubject,
+  CATEGORY_SUBJECTS,
+  getReadUrl,
+} from "../Services/openLibrary";
+
+// ─────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────
+const CATEGORIES = [
+  { name: "All Books", value: "all", icon: "📚" },
+  { name: "Fiction", value: "fiction", icon: "📖" },
+  { name: "Science", value: "science", icon: "🔬" },
+  { name: "Self-Help", value: "self-help", icon: "🌱" },
+  { name: "Business", value: "business", icon: "💼" },
+  { name: "History", value: "history", icon: "🏛️" },
+];
+
+// ─────────────────────────────────────────────
+// SKELETON
+// ─────────────────────────────────────────────
+const BookSkeleton = () => (
+  <Box sx={{ borderRadius: 2, overflow: "hidden" }}>
+    <Skeleton variant="rectangular" height={280} />
+    <Box sx={{ p: 1 }}>
+      <Skeleton width="80%" />
+      <Skeleton width="60%" />
+    </Box>
+  </Box>
+);
+
+// ─────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────
+export default function Home({ addToCart }) {
+
+  // ── Refs
   const categoryRef = useRef(null);
+  const cacheRef = useRef({});
 
-  const categories = [
-    { name: "All Books", value: "all", icon: "📚" },
-    { name: "Fiction", value: "fiction", icon: "📖" },
-    { name: "Science", value: "science", icon: "🔬" },
-    { name: "Self-Help", value: "self-help", icon: "🌱" },
-    { name: "Business", value: "business", icon: "💼" },
-    { name: "History", value: "history", icon: "🏛️" },
-  ];
+  // ── State
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [books, setBooks] = useState([]);
 
-  /* ===============================
-     TRENDING BOOKS (HOME ONLY)
-  =============================== */
-  const trendingBooks = books.filter((b) => b.trending);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  /* ===============================
-     CATEGORY FILTER
-  =============================== */
-  const filteredBooks =
-    selectedCategory === "all"
-      ? trendingBooks
-      : trendingBooks.filter(
-          (b) => b.category.toLowerCase() === selectedCategory
-        );
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  /* ===============================
-     ADD TO CART (SAME AS BOOKS PAGE)
-  =============================== */
-  const handleAddToCart = (book) => {
-    const exists = cart.find((item) => item.id === book.id);
+  // ─────────────────────────────────────────────
+  // FETCH LOGIC
+  // ─────────────────────────────────────────────
+  const fetchBooks = useCallback(async (category) => {
 
-    if (exists) {
-      setCart((prev) =>
-        prev.map((item) =>
-          item.id === book.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-      toast.info("Item quantity updated");
-    } else {
-      setCart((prev) => [...prev, { ...book, quantity: 1 }]);
-      toast.success("Added to cart successfully");
+    // Cache hit
+    if (cacheRef.current[category]) {
+      setBooks(cacheRef.current[category]);
+      return;
+    }
+
+    if (books.length === 0) setLoading(true);
+    setError(null);
+
+    try {
+      let result = [];
+
+      if (category === "all") {
+        result = await fetchTrending("weekly", 12);
+      } else {
+        const subject = CATEGORY_SUBJECTS[category];
+        if (subject) result = await fetchBySubject(subject, 12);
+      }
+
+      cacheRef.current[category] = result;
+      setBooks(result);
+
+    } catch (err) {
+      setError("Failed to load books.",err);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+
+  }, [books.length]);
+
+  // Initial + category change
+  useEffect(() => {
+    fetchBooks(selectedCategory);
+  }, [selectedCategory, fetchBooks]);
+
+  // ─────────────────────────────────────────────
+  // HANDLERS
+  // ─────────────────────────────────────────────
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+
+    setTimeout(() => {
+      categoryRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  const handleViewDetails = async (book) => {
+    setSelectedBook(book);
+    setModalOpen(true);
+
+    try {
+      const readUrl = await getReadUrl(book.title, book.author);
+
+      setSelectedBook((prev) => ({
+        ...prev,
+        readUrl,
+      }));
+    } catch {
+      // silent fail
     }
   };
 
+  // ─────────────────────────────────────────────
+  // RENDER HELPERS
+  // ─────────────────────────────────────────────
+  const renderContent = () => {
+
+    if (loading) {
+      return Array.from({ length: 12 }).map((_, i) => (
+        <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+          <BookSkeleton />
+        </Grid>
+      ));
+    }
+
+    if (error) {
+      return (
+        <Grid item xs={12}>
+          <Alert
+            severity="error"
+            action={
+              <Button onClick={() => fetchBooks(selectedCategory)}>
+                Retry
+              </Button>
+            }
+          >
+            {error}
+          </Alert>
+        </Grid>
+      );
+    }
+
+    if (books.length === 0) {
+      return (
+        <Grid item xs={12}>
+          <Typography align="center">No books found</Typography>
+        </Grid>
+      );
+    }
+
+    return books.map((book) => (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
+        <BookCard
+          book={book}
+          onAddToCart={() => addToCart(book)}
+          onViewDetails={() => handleViewDetails(book)}
+        />
+      </Grid>
+    ));
+  };
+
+  const currentCategory = CATEGORIES.find(
+    (c) => c.value === selectedCategory
+  );
+
+  // ─────────────────────────────────────────────
+  // JSX
+  // ─────────────────────────────────────────────
   return (
-    <Box sx={{ width: "100%", color: "white" }}>
-      {/* ================= HERO ================= */}
+    <Box sx={{ color: "white" }}>
+
+      {/* HERO */}
       <HeroSection
         onBrowse={() =>
           categoryRef.current?.scrollIntoView({ behavior: "smooth" })
         }
       />
 
-      {/* ================= CATEGORY ================= */}
+      {/* CATEGORY */}
       <CategorySection
         categoryRef={categoryRef}
-        categories={categories}
+        categories={CATEGORIES}
         selectedCategory={selectedCategory}
-        onSelect={setSelectedCategory}
-        onClear={() => setSelectedCategory("all")}
+        onSelect={handleCategoryChange}
+        onClear={() => handleCategoryChange("all")}
       />
 
-      {/* ================= TRENDING BOOKS ================= */}
-    <Box sx={{ width: "100%", mt: 4 }}>
+      {/* BOOK GRID */}
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: 2, pb: 8 }}>
 
-        <Box
-          sx={{
-            maxWidth: 1200,
-            mx: "auto",
-            px: { xs: 2, md: 4 },
-            pb: 6,
-          }}
-        >
-          <Typography
-  sx={{
-    mb: 2,           // ⬅ tighter
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "#ffa500",
-  }}
->
-  🔥 Trending Books
-</Typography>
+        <Typography sx={{ mb: 3, fontWeight: 700 }}>
+          {selectedCategory === "all"
+            ? "🔥 Trending"
+            : `📚 ${currentCategory?.name}`}
+        </Typography>
 
+        <Grid container spacing={3}>
+          {renderContent()}
+        </Grid>
 
-       <Grid container spacing={3} justifyContent="center">
-
-            {filteredBooks.map((book) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
-                <BookCard
-                  book={book}
-                  onAddToCart={() => handleAddToCart(book)}
-                  onViewDetails={() => console.log("View details", book)}
-                />
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* VIEW ALL */}
-          <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Button
-              variant="contained"
-              color="warning"
-              size="large"
-              href="/books"
-            >
-              View All Books
+        {!loading && !error && books.length > 0 && (
+          <Box sx={{ textAlign: "center", mt: 5 }}>
+            <Button variant="contained" href="/books">
+              View All
             </Button>
           </Box>
-        </Box>
+        )}
       </Box>
 
-      {/* ================= CONTACT ================= */}
-      <ContactPage />
+      {/* MODAL */}
+      <BookDetailModal
+        open={modalOpen}
+        book={selectedBook}
+        onClose={() => setModalOpen(false)}
+        onAddToCart={addToCart}
+      />
     </Box>
   );
 }
