@@ -39,10 +39,8 @@ const BookSkeleton = () => (
     </Box>
   </Box>
 );
-
-// ─────────────────────────────────────────────
 // MAIN COMPONENT
-// ─────────────────────────────────────────────
+
 export default function Home({ addToCart }) {
 
   // ── Refs
@@ -58,10 +56,8 @@ export default function Home({ addToCart }) {
 
   const [selectedBook, setSelectedBook] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  // ─────────────────────────────────────────────
   // FETCH LOGIC
-  // ─────────────────────────────────────────────
+
   const fetchBooks = useCallback(async (category) => {
 
     // Cache hit
