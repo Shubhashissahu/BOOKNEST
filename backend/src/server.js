@@ -50,8 +50,7 @@ app.use(cors({
 }));
 
 // ✅ FIX #9 — standard wildcard syntax
-app.options("*", cors());
-
+app.options(/.*/, cors());
 // ─── Body Parsing ────────────────────────────────────────────
 // ✅ FIX #5 — payload size limits
 app.use(express.json({ limit: "10kb" }));

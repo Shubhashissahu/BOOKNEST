@@ -1,8 +1,5 @@
 //src/services/openlibery.js
 
-// const GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes";
-// const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_KEY;
-
 const BASE_URL = "https://openlibrary.org";
 
 // ── Subject slugs that map to each UI category chip
