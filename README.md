@@ -17,18 +17,6 @@ This project demonstrates:
 
 ---
 
-## 🎯 Why BookNest?
-
-Most beginner projects focus only on UI.  
-**BookNest is designed as a complete system**, showcasing real-world development practices like:
-
-- API design and integration  
-- Full-stack architecture  
-- Database modeling  
-- End-to-end user flow  
-
----
-
 ##  Key Features
 
 ### 🔐 Authentication & Security
@@ -43,10 +31,9 @@ Most beginner projects focus only on UI.
 - Sorting (price, newest, relevance)  
 
 ### 🛒 Cart & Checkout
-- Add, remove, and update cart items  
-- Persistent cart (stored in database)  
-- Multi-step checkout flow  
-- Order summary page  
+- Add, update, and remove cart items (persisted server-side per user)
+- Checkout flow with order placement
+- Simulated payment processing with transaction records and emailed receipts (PDF via `pdfkit`, email via `nodemailer`) — **note:** this is a mock payment flow (`processPayment` generates a fake transaction ID and does not call a real payment gateway), not a Stripe/Razorpay integration 
 
 ### ⚙️ Backend Architecture
 - MVC pattern (routes → controllers → models)  
@@ -54,24 +41,56 @@ Most beginner projects focus only on UI.
 - Modular and scalable API design  
 
 ---
-
 ## 🏗️ Tech Stack
-
-| Layer | Technology |
-|------|-----------|
-| Frontend | React.js |
-| Backend | Node.js, Express.js |
-| Database | MongoDB (Mongoose) |
-| Authentication | JWT |
-| Styling | Tailwind CSS / CSS Modules |
-
+ 
+| Layer          | Technology |
+| -------------- | ---------- |
+| Frontend       | React 19, Vite, React Router 7, Material UI (MUI) 7, Framer Motion |
+| Backend        | Node.js, Express 5 |
+| Database       | MongoDB (Mongoose) |
+| Auth           | JWT, Passport.js (Google OAuth 2.0), bcryptjs, express-session + connect-mongo |
+| File/Media     | Cloudinary, Multer, react-pdf / pdfjs-dist |
+| Email & PDFs   | Nodemailer, PDFKit |
+| Security       | Helmet, express-rate-limit |
+ 
 ---
 
-## 🧩 System Architecture
-React Client
-↓ 
-(Axios API Calls)
-Express Server
-↓
+## 📂 Project Structure
+ 
+```
+BOOKNEST/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # db.js, passport.js
+│   │   ├── controllers/     # auth, book, cart, order, payment, contact
+│   │   ├── middleware/      # auth.js (JWT "protect" middleware)
+│   │   ├── models/          # User, Book, Order, Transaction, Cart, Contact
+│   │   ├── routes/          # /api/auth, /api/books, /api/cart, /api/orders, /api/payment
+│   │   ├── utils/           # email.js
+│   │   └── server.js        # Express app entrypoint
+│   └── package.json
+└── frontend/
+    ├── src/
+    │   ├── Components/      # NavBar, BookCard, PaymentModal, LiveChat, etc.
+    │   ├── Pages/           # Home, BooksPage, ContactPage, Dashboard, Orders, Profile, Settings, Checkout
+    │   ├── Services/        # googleBooksApi, openLibrary, semanticScholar
+    │   ├── api/              # axios wrappers for auth, cart, orders
+    │   ├── context/          # AuthContext
+    │   └── App.jsx
+    └── package.json
+```
 
-Controllers → Models → MongoDB
+## 🧩 Architecture
+ 
+```
+React Client (Vite)
+      │  Axios
+      ▼
+Express Server  ──▶  Helmet / CORS / Rate Limiting
+      │
+      ▼
+Routes ──▶ Controllers ──▶ Models ──▶ MongoDB
+      │
+      ▼
+Passport (Google OAuth) + JWT middleware
+```
